@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "dom"],
+    "target": "ESNext",
+    "module": "commonjs",
+    "emitDeclarationOnly": true,
+    "jsx": "react",
+    "downlevelIteration": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "outDir": "../../dist",
+    "baseUrl": "../../",
+    "paths": {
+      "@first-path/*": ["./src/first-path/*"]
+    }
+  },
+  "include": ["../../src/**/*", "../../sandbox/**/*"]
+}

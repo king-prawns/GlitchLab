@@ -53,7 +53,7 @@ chaos.disable();
 
 ---
 
-### ⚙️ Configuration
+## ⚙️ Configuration
 
 
 | Option   |      Type      |  Default | Description |

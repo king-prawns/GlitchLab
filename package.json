@@ -1,0 +1,24 @@
+{
+  "name": "glitchlab",
+  "version": "0.0.1",
+  "description": "Where your video player learns to survive chaos",
+  "main": "dist/webcodecs.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/king-prawns/GlitchLab.git"
+  },
+  "author": "king-prawns",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/king-prawns/GlitchLab/issues"
+  },
+  "homepage": "https://github.com/king-prawns/GlitchLab#readme",
+  "scripts": {
+    "prepare": "ts-patch install -s && husky",
+    "pre:commit": "lint-staged",
+    "lint": "eslint --config ./config/eslint/eslint.config.mjs \"./src/**/*.ts\"",
+    "prettier": "prettier --config ./config/prettier/.prettierrc --list-different \"src/**/*.ts\" --ignore-path ../config/prettier/.prettierignore",
+    "typecheck": "tsc -p ./config/typescript/tsconfig.json --noEmit"
+  }
+}
