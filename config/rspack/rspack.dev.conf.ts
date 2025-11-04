@@ -10,11 +10,6 @@ const devConfig: Configuration = {
       configFile: path.resolve(__dirname, '../typescript/tsconfig.json')
     },
     extensions: ['.ts', '.tsx', '.js', '.json', '.css']
-    // fallback: {
-    //   process: require.resolve('process/browser', {
-    //     paths: ['sandbox']
-    //   })
-    // }
   },
   optimization: {
     minimize: false
@@ -40,9 +35,6 @@ const devConfig: Configuration = {
       template: 'sandbox/page-template.html',
       chunks: ['main']
     })
-    // new ProvidePlugin({
-    //   process: 'process'
-    // })
   ],
   module: {
     rules: [
