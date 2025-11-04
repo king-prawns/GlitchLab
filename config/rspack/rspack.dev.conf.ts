@@ -29,7 +29,7 @@ const devConfig: Configuration = {
   },
   plugins: [
     new HtmlRspackPlugin({
-      title: 'Sandbox',
+      title: 'GlitchLab Sandbox',
       filename: 'index.html',
       favicon: 'sandbox/favicon.ico',
       template: 'sandbox/page-template.html',
