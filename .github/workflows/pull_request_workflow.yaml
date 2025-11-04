@@ -1,0 +1,41 @@
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}
+  cancel-in-progress: true
+
+permissions: write-all
+
+jobs:
+  pr-pipeline:
+    name: 'PR-pipeline'
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: ✅ Checkout
+        uses: actions/checkout@v5
+      - name: 🏠 Setup Node
+        uses: actions/setup-node@v5
+        with:
+          always-auth: 'true'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - name: ⚙️ Install Dependencies
+        run: npm ci && npm ci --prefix sandbox/
+      - name: 🧬 Lint
+        run: npm run lint
+      - name: 💁‍♀️ Prettier
+        run: npm run prettier
+      - name: 🔍 Typecheck
+        run: npm run typecheck
+      - name: 👷🏽 Build Package
+        run: npm run build

@@ -1,0 +1,17 @@
+{
+  "eslint.options": {
+    "overrideConfigFile": "./config/eslint/eslint.config.mjs"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "prettier.configPath": "./config/prettier/.prettierrc",
+  "prettier.ignorePath": "./config/prettier/.prettierignore",
+  "editor.formatOnSave": true,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
