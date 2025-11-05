@@ -12,9 +12,9 @@ type IState = {
 };
 
 class Sandbox extends React.Component<IProps, IState> {
-  private chaos: Chaos | null = null;
+  #chaos: Chaos | null = null;
 
-  private player: Player | null = null;
+  #player: Player | null = null;
 
   constructor(props: IProps) {
     super(props);
@@ -28,9 +28,9 @@ class Sandbox extends React.Component<IProps, IState> {
     return (
       <div className="sandbox">
         <h1>GlitchLab Sandbox</h1>
-        {this.state.status === 'Idle' && <button onClick={this.onCreate}>CREATE</button>}
-        {this.state.status === 'Created' && <button onClick={this.onStart}>START</button>}
-        {this.state.status === 'Started' && <button onClick={this.onStop}>STOP</button>}
+        {this.state.status === 'Idle' && <button onClick={this.#onCreate}>CREATE</button>}
+        {this.state.status === 'Created' && <button onClick={this.#onStart}>START</button>}
+        {this.state.status === 'Started' && <button onClick={this.#onStop}>STOP</button>}
         <p>Status: {this.state.status}</p>
         {this.state.status !== 'Idle' && (
           <div className="video-wrapper">
@@ -41,30 +41,30 @@ class Sandbox extends React.Component<IProps, IState> {
     );
   }
 
-  private onCreate = (): void => {
-    this.chaos = new GlitchLab();
+  #onCreate = (): void => {
+    this.#chaos = new GlitchLab();
 
-    this.player = new DashjsPlayer();
+    this.#player = new DashjsPlayer();
 
     this.setState({status: 'Created'});
   };
 
-  private onStart = (): void => {
+  #onStart = (): void => {
     const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
     const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
 
-    this.chaos?.enable();
+    this.#chaos?.enable();
 
-    this.player?.load(videoElement, MANIFEST_URL);
+    this.#player?.load(videoElement, MANIFEST_URL);
 
     this.setState({status: 'Started'});
   };
 
-  private onStop = (): void => {
-    this.chaos?.disable();
+  #onStop = (): void => {
+    this.#chaos?.disable();
 
-    this.player?.stop();
-    this.player = null;
+    this.#player?.stop();
+    this.#player = null;
 
     this.setState({status: 'Idle'});
   };
