@@ -64,6 +64,7 @@ class Sandbox extends React.Component<IProps, IState> {
     this.chaos?.disable();
 
     this.player?.stop();
+    this.player = null;
 
     this.setState({status: 'Idle'});
   };
