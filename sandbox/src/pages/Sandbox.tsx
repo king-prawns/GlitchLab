@@ -8,6 +8,7 @@ import DashjsPlayer from '../players/Dashjs';
 type IProps = Record<string, never>;
 type IState = {
   status: 'Idle' | 'Created' | 'Started' | 'Stopped';
+  libVersion: string;
 };
 
 class Sandbox extends React.Component<IProps, IState> {
@@ -19,7 +20,8 @@ class Sandbox extends React.Component<IProps, IState> {
     super(props);
 
     this.state = {
-      status: 'Idle'
+      status: 'Idle',
+      libVersion: ''
     };
   }
 
@@ -30,7 +32,7 @@ class Sandbox extends React.Component<IProps, IState> {
   render(): JSX.Element {
     return (
       <div className="sandbox">
-        <h1>GlitchLab Sandbox</h1>
+        <h1>GlitchLab v{this.state.libVersion}</h1>
         {this.state.status === 'Idle' && <button onClick={this.#onCreate}>CREATE</button>}
         {this.state.status === 'Created' && <button onClick={this.#onStart}>START</button>}
         {this.state.status === 'Started' && <button onClick={this.#onStop}>STOP</button>}
@@ -52,7 +54,7 @@ class Sandbox extends React.Component<IProps, IState> {
 
     this.#player = new DashjsPlayer();
 
-    this.setState({status: 'Created'});
+    this.setState({status: 'Created', libVersion: this.#glitchLab.version});
   };
 
   #onStart = (): void => {
