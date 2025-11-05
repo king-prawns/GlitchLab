@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 
-import Config from '@config/config';
+import ChaosOptions from '@config/interfaces/chaosOptions';
 
 import Console from './interfaces/console';
 
 class Logger {
-  #config: Config;
+  #opt: Required<ChaosOptions>;
 
-  constructor(config: Config) {
-    this.#config = config;
+  constructor(opt: Required<ChaosOptions>) {
+    this.#opt = opt;
   }
 
   registerLogger = (): Console => {
@@ -30,7 +30,7 @@ class Logger {
   }
 
   #shouldLog(): boolean {
-    if (this.#config.opt.quiet) return false;
+    if (this.#opt.quiet) return false;
 
     return true;
   }

@@ -62,6 +62,7 @@ chaos.disable();
 | `httpChaos`     | `number`  | `0`     | Probability (0–1) of HTTP disruption         |
 | `deterministic` | `boolean` | `false` | Reproduce chaos using a fixed seed           |
 | `profiles`      | `object`  | -       | Named sets of fault configurations           |
+| `quiet`         | `boolean` | `false` | Disable logging                              |
 
 ---
 

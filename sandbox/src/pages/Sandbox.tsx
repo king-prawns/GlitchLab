@@ -2,7 +2,6 @@ import './Sandbox.css';
 import React, {JSX} from 'react';
 
 import {GlitchLab} from '../../../src';
-import type {Chaos} from '../../../src';
 import Player from '../interfaces/Player';
 import DashjsPlayer from '../players/Dashjs';
 
@@ -12,7 +11,7 @@ type IState = {
 };
 
 class Sandbox extends React.Component<IProps, IState> {
-  #chaos: Chaos | null = null;
+  #glitchLab: GlitchLab | null = null;
 
   #player: Player | null = null;
 
@@ -22,6 +21,10 @@ class Sandbox extends React.Component<IProps, IState> {
     this.state = {
       status: 'Idle'
     };
+  }
+
+  componentDidMount(): void {
+    this.#onCreate();
   }
 
   render(): JSX.Element {
@@ -42,7 +45,10 @@ class Sandbox extends React.Component<IProps, IState> {
   }
 
   #onCreate = (): void => {
-    this.#chaos = new GlitchLab();
+    // eslint-disable-next-line no-console
+    console.clear();
+
+    this.#glitchLab = new GlitchLab();
 
     this.#player = new DashjsPlayer();
 
@@ -53,7 +59,7 @@ class Sandbox extends React.Component<IProps, IState> {
     const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
     const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
 
-    this.#chaos?.enable();
+    this.#glitchLab?.enable();
 
     this.#player?.load(videoElement, MANIFEST_URL);
 
@@ -61,7 +67,7 @@ class Sandbox extends React.Component<IProps, IState> {
   };
 
   #onStop = (): void => {
-    this.#chaos?.disable();
+    this.#glitchLab?.disable();
 
     this.#player?.stop();
     this.#player = null;

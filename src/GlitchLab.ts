@@ -1,17 +1,19 @@
 import Config from '@config/config';
+import type ChaosOptions from '@config/interfaces/chaosOptions';
 import type Console from '@logger/interfaces/console';
+import Logger from '@logger/logger';
+import Monkey from '@monkey/monkey';
 
-import type Chaos from './interfaces/chaos';
-import type ChaosOptions from './interfaces/chaosOptions';
-import Logger from './logger/logger';
-
-class GlitchLab implements Chaos {
+class GlitchLab {
   #config: Config;
   #console: Console;
+  #monkey: Monkey;
 
   constructor(opt?: ChaosOptions) {
     this.#config = new Config(opt);
-    this.#console = new Logger(this.#config).registerLogger();
+    this.#console = new Logger(this.#config.opt).registerLogger();
+
+    this.#monkey = new Monkey(this.#config.opt, this.#console);
 
     this.#console.info(`GlitchLab v${this.version}`);
     this.#console.info('GlitchLab config:', this.#config.opt);
@@ -22,10 +24,15 @@ class GlitchLab implements Chaos {
   }
 
   enable(): void {
-    // TODO: implement
+    this.#console.info('GlitchLab enabled');
+
+    this.#monkey.patch();
   }
+
   disable(): void {
-    // TODO: implement
+    this.#console.info('GlitchLab disabled');
+
+    this.#monkey.restore();
   }
 }
 

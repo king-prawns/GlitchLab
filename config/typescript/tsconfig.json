@@ -14,9 +14,9 @@
     "outDir": "../../dist",
     "baseUrl": "../../",
     "paths": {
-      "@src/*": ["./src/*"],
       "@config/*": ["./src/config/*"],
-      "@logger/*": ["./src/logger/*"]
+      "@logger/*": ["./src/logger/*"],
+      "@monkey/*": ["./src/monkey/*"]
     }
   },
   "include": ["../../src/**/*", "../../sandbox/**/*"]

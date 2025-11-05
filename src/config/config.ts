@@ -1,4 +1,4 @@
-import ChaosOptions from '@src/interfaces/chaosOptions';
+import ChaosOptions from './interfaces/chaosOptions';
 
 class Config {
   #options: Required<ChaosOptions> = {
