@@ -26,8 +26,8 @@ class Config {
     const sanitizedOpt: Partial<ChaosOptions> = {};
 
     if (opt.timerThrottle !== undefined) {
-      if (opt.timerThrottle < 0 || opt.timerThrottle > 1) {
-        throw new Error('timerThrottle must be between 0 and 1');
+      if (opt.timerThrottle <= 0 || opt.timerThrottle > 1) {
+        throw new Error('timerThrottle must be greater than 0 and less than or equal to 1');
       }
       sanitizedOpt.timerThrottle = Math.min(opt.timerThrottle, this.#options.timerThrottle);
     }
