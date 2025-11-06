@@ -1,6 +1,8 @@
 import path from 'path';
 
-import {Configuration, HtmlRspackPlugin} from '@rspack/core';
+import {Configuration, DefinePlugin, HtmlRspackPlugin} from '@rspack/core';
+
+import {version} from '../../package.json';
 
 const devConfig: Configuration = {
   extends: './rspack.base.conf.ts',
@@ -34,6 +36,9 @@ const devConfig: Configuration = {
       favicon: 'sandbox/favicon.ico',
       template: 'sandbox/page-template.html',
       chunks: ['main']
+    }),
+    new DefinePlugin({
+      APP_VERSION: JSON.stringify(version)
     })
   ],
   module: {

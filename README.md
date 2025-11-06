@@ -38,7 +38,7 @@ yarn add glitchlab
 import {GlitchLab} from 'glitchlab';
 
 const chaos: GlitchLab = new GlitchLab({
-  timerThrottle: 0.5, // slow down timers by 50%
+  timerThrottle: 0.6, // 60% of normal speed
   httpChaos: 0.3 // 30% chance to delay/block requests
 });
 
@@ -56,12 +56,13 @@ chaos.disable();
 
 ## ⚙️ Configuration
 
-| Option          | Type      | Default | Description                            |
-| --------------- | --------- | ------- | -------------------------------------- |
-| `timerThrottle` | `number`  | `1.0`   | Multiplier applied to timing functions |
-| `httpChaos`     | `number`  | `0`     | Probability (0–1) of HTTP disruption   |
-| `deterministic` | `boolean` | `false` | Reproduce chaos using a fixed seed     |
-| `profiles`      | `object`  | -       | Named sets of fault configurations     |
+| Option          | Type      | Default | Description                                                                        |
+| --------------- | --------- | ------- | ---------------------------------------------------------------------------------- |
+| `timerThrottle` | `number`  | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s) |
+| `httpChaos`     | `number`  | `0`     | Probability (0.0 <= p <= 1.0) of HTTP disruption                                   |
+| `deterministic` | `boolean` | `false` | Reproduce chaos using a fixed seed                                                 |
+| `profiles`      | `object`  | -       | Named sets of fault configurations                                                 |
+| `quiet`         | `boolean` | `false` | Disable logging                                                                    |
 
 ---
 
@@ -69,8 +70,8 @@ chaos.disable();
 
 ```typescript
 chaos.profile('unstable-network', {
-  httpChaos: 0.4,
-  timerThrottle: 0.8
+  timerThrottle: 0.8, // 80% of normal speed
+  httpChaos: 0.4 // 40% chance to delay/block requests
 });
 
 chaos.use('unstable-network');
@@ -85,20 +86,7 @@ Chaos is the best teacher, especially for video playback.
 
 ---
 
-## 🧱 Roadmap
-
-- [ ] Item 1
-- [ ] Item 2
-
----
-
 ## 🤝 Contributing
 
 Contributions, ideas, and chaos are welcome.
 <br/>Open a PR or start a discussion, let’s break some players together.
-
----
-
-## ⚖️ License
-
-MIT © 2025 GlitchLab

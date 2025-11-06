@@ -1,6 +1,8 @@
 import path from 'path';
 
-import {Configuration, SwcJsMinimizerRspackPlugin} from '@rspack/core';
+import {Configuration, DefinePlugin, SwcJsMinimizerRspackPlugin} from '@rspack/core';
+
+import {version} from '../../package.json';
 
 const prodConfig: Configuration = {
   extends: './rspack.base.conf.ts',
@@ -35,6 +37,11 @@ const prodConfig: Configuration = {
       })
     ]
   },
+  plugins: [
+    new DefinePlugin({
+      APP_VERSION: JSON.stringify(version)
+    })
+  ],
   module: {
     rules: [
       {

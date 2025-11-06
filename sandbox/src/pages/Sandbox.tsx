@@ -2,35 +2,40 @@ import './Sandbox.css';
 import React, {JSX} from 'react';
 
 import {GlitchLab} from '../../../src';
-import type {Chaos} from '../../../src';
 import Player from '../interfaces/Player';
 import DashjsPlayer from '../players/Dashjs';
 
 type IProps = Record<string, never>;
 type IState = {
   status: 'Idle' | 'Created' | 'Started' | 'Stopped';
+  libVersion: string;
 };
 
 class Sandbox extends React.Component<IProps, IState> {
-  private chaos: Chaos | null = null;
+  #glitchLab: GlitchLab | null = null;
 
-  private player: Player | null = null;
+  #player: Player | null = null;
 
   constructor(props: IProps) {
     super(props);
 
     this.state = {
-      status: 'Idle'
+      status: 'Idle',
+      libVersion: ''
     };
+  }
+
+  componentDidMount(): void {
+    this.#onCreate();
   }
 
   render(): JSX.Element {
     return (
       <div className="sandbox">
-        <h1>GlitchLab Sandbox</h1>
-        {this.state.status === 'Idle' && <button onClick={this.onCreate}>CREATE</button>}
-        {this.state.status === 'Created' && <button onClick={this.onStart}>START</button>}
-        {this.state.status === 'Started' && <button onClick={this.onStop}>STOP</button>}
+        <h1>GlitchLab v{this.state.libVersion}</h1>
+        {this.state.status === 'Idle' && <button onClick={this.#onCreate}>CREATE</button>}
+        {this.state.status === 'Created' && <button onClick={this.#onStart}>START</button>}
+        {this.state.status === 'Started' && <button onClick={this.#onStop}>STOP</button>}
         <p>Status: {this.state.status}</p>
         {this.state.status !== 'Idle' && (
           <div className="video-wrapper">
@@ -41,30 +46,33 @@ class Sandbox extends React.Component<IProps, IState> {
     );
   }
 
-  private onCreate = (): void => {
-    this.chaos = new GlitchLab();
+  #onCreate = (): void => {
+    // eslint-disable-next-line no-console
+    console.clear();
 
-    this.player = new DashjsPlayer();
+    this.#glitchLab = new GlitchLab();
 
-    this.setState({status: 'Created'});
+    this.#player = new DashjsPlayer();
+
+    this.setState({status: 'Created', libVersion: this.#glitchLab.version});
   };
 
-  private onStart = (): void => {
+  #onStart = (): void => {
     const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
     const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
 
-    this.chaos?.enable();
+    this.#glitchLab?.enable();
 
-    this.player?.load(videoElement, MANIFEST_URL);
+    this.#player?.load(videoElement, MANIFEST_URL);
 
     this.setState({status: 'Started'});
   };
 
-  private onStop = (): void => {
-    this.chaos?.disable();
+  #onStop = (): void => {
+    this.#glitchLab?.disable();
 
-    this.player?.stop();
-    this.player = null;
+    this.#player?.stop();
+    this.#player = null;
 
     this.setState({status: 'Idle'});
   };
