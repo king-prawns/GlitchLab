@@ -1,8 +1,18 @@
+import type ChaosOptions from '@config/interfaces/chaosOptions';
+import type Console from '@logger/interfaces/console';
+import Rng from '@rng/rng';
+
 import Patch from './patch';
 
 class Network extends Patch {
   #originalFetch: typeof fetch | null = null;
   #originalXHR: typeof XMLHttpRequest | null = null;
+  #rng: Rng;
+
+  constructor(opt: Required<ChaosOptions>, console: Console) {
+    super(opt, console);
+    this.#rng = new Rng(opt.deterministic);
+  }
 
   patch(): void {
     if (this.opt.httpChaos === 0) return;
@@ -23,14 +33,14 @@ class Network extends Patch {
   }
 
   #patchFetch(): void {
-    if (!this.#originalFetch && typeof window.fetch === 'function') {
+    if (!this.#originalFetch) {
       this.#originalFetch = window.fetch;
     }
 
     const original: typeof fetch = this.#originalFetch!;
 
     const patched: typeof fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      if (Math.random() < this.opt.httpChaos) {
+      if (this.#rng.random() < this.opt.httpChaos) {
         return Promise.reject(new TypeError('GlitchLab: Failed to fetch'));
       }
 
@@ -47,6 +57,7 @@ class Network extends Patch {
 
     const RealXHR: typeof XMLHttpRequest = this.#originalXHR;
     const httpChaos: number = this.opt.httpChaos;
+    const rng: Rng = this.#rng;
 
     const PatchedXHR: typeof XMLHttpRequest = ((): typeof XMLHttpRequest => {
       type OnName =
@@ -144,7 +155,7 @@ class Network extends Patch {
           this.#real.open(method, url, async, username, password);
         }
         send(body?: Document | XMLHttpRequestBodyInit | null): void {
-          this.#shouldFail = Math.random() < httpChaos;
+          this.#shouldFail = rng.random() < httpChaos;
           this.#real.send(body ?? null);
         }
         abort(): void {
