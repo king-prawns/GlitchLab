@@ -4,6 +4,7 @@ class Config {
   #options: Required<ChaosOptions> = {
     timerThrottle: 1.0,
     httpChaos: 0,
+    deterministic: false,
     quiet: false
   };
 
@@ -38,6 +39,10 @@ class Config {
         throw new Error('httpChaos must be between 0 and 1');
       }
       sanitizedOpt.httpChaos = opt.httpChaos;
+    }
+
+    if (opt.deterministic !== undefined) {
+      sanitizedOpt.deterministic = opt.deterministic;
     }
 
     if (opt.quiet !== undefined) {
