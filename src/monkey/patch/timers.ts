@@ -1,26 +1,15 @@
-import type ChaosOptions from '@config/interfaces/chaosOptions';
-import type Console from '@logger/interfaces/console';
+import Patch from './patch';
 
-import Patch from '../interfaces/patch';
-
-class Timers implements Patch {
-  #opt: Required<ChaosOptions>;
-  #console: Console;
-
+class Timers extends Patch {
   #originalSetTimeout: typeof setTimeout | null = null;
   #originalSetInterval: typeof setInterval | null = null;
   #originalRequestAnimationFrame: typeof requestAnimationFrame | null = null;
   #originalRafAnchor: number | null = null;
 
-  constructor(opt: Required<ChaosOptions>, console: Console) {
-    this.#opt = opt;
-    this.#console = console;
-  }
-
   patch(): void {
-    if (this.#opt.timerThrottle === 1.0) return;
+    if (this.opt.timerThrottle === 1.0) return;
 
-    this.#console.info('Patching timers');
+    this.console.info('Patching timers');
 
     this.#patchSetTimeout();
     this.#patchSetInterval();
@@ -28,7 +17,9 @@ class Timers implements Patch {
   }
 
   restore(): void {
-    this.#console.info('Restoring timers');
+    if (this.opt.timerThrottle === 1.0) return;
+
+    this.console.info('Restoring timers');
 
     this.#restoreSetTimeout();
     this.#restoreSetInterval();
@@ -48,7 +39,7 @@ class Timers implements Patch {
       timeout?: number,
       ...args: Array<unknown>
     ): number => {
-      const t: number = this.#opt.timerThrottle;
+      const t: number = this.opt.timerThrottle;
       const requested: number = typeof timeout === 'number' && isFinite(timeout) ? timeout : 0;
       const scaled: number = Math.round(requested / t);
 
@@ -81,7 +72,7 @@ class Timers implements Patch {
       timeout?: number,
       ...args: Array<unknown>
     ): number => {
-      const t: number = this.#opt.timerThrottle;
+      const t: number = this.opt.timerThrottle;
       const requested: number = typeof timeout === 'number' && isFinite(timeout) ? timeout : 0;
       const scaled: number = Math.round(requested / t);
 
@@ -109,7 +100,7 @@ class Timers implements Patch {
     const original: typeof requestAnimationFrame = this.#originalRequestAnimationFrame!;
 
     const patched: typeof requestAnimationFrame = ((callback: FrameRequestCallback): number => {
-      const t: number = this.#opt.timerThrottle;
+      const t: number = this.opt.timerThrottle;
 
       return original.call(window, (realTs: DOMHighResTimeStamp) => {
         if (this.#originalRafAnchor === null) {

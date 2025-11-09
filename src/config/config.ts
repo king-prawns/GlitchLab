@@ -3,6 +3,7 @@ import ChaosOptions from './interfaces/chaosOptions';
 class Config {
   #options: Required<ChaosOptions> = {
     timerThrottle: 1.0,
+    httpChaos: 0,
     quiet: false
   };
 
@@ -29,7 +30,14 @@ class Config {
       if (opt.timerThrottle <= 0 || opt.timerThrottle > 1) {
         throw new Error('timerThrottle must be greater than 0 and less than or equal to 1');
       }
-      sanitizedOpt.timerThrottle = Math.min(opt.timerThrottle, this.#options.timerThrottle);
+      sanitizedOpt.timerThrottle = opt.timerThrottle;
+    }
+
+    if (opt.httpChaos !== undefined) {
+      if (opt.httpChaos < 0 || opt.httpChaos > 1) {
+        throw new Error('httpChaos must be between 0 and 1');
+      }
+      sanitizedOpt.httpChaos = opt.httpChaos;
     }
 
     if (opt.quiet !== undefined) {
