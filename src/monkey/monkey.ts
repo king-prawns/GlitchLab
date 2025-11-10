@@ -1,5 +1,6 @@
 import type ChaosOptions from '@config/interfaces/chaosOptions';
 import type Console from '@logger/interfaces/console';
+import Seed from '@seed/seed';
 
 import Network from './patch/network';
 import Patch from './patch/patch';
@@ -9,7 +10,8 @@ class Monkey {
   #monkeys: Array<Patch> = [];
 
   constructor(opt: Required<ChaosOptions>, console: Console) {
-    this.#monkeys.push(new Timers(opt, console), new Network(opt, console));
+    const seed: Seed = new Seed(opt.seed);
+    this.#monkeys.push(new Timers(seed, opt, console), new Network(seed, opt, console));
   }
 
   patch(): void {

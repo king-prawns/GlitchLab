@@ -1,3 +1,5 @@
+import Seed from '@seed/seed';
+
 import Patch from './patch';
 
 class Network extends Patch {
@@ -23,14 +25,14 @@ class Network extends Patch {
   }
 
   #patchFetch(): void {
-    if (!this.#originalFetch && typeof window.fetch === 'function') {
+    if (!this.#originalFetch) {
       this.#originalFetch = window.fetch;
     }
 
     const original: typeof fetch = this.#originalFetch!;
 
     const patched: typeof fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      if (Math.random() < this.opt.httpChaos) {
+      if (this.seed.random() < this.opt.httpChaos) {
         return Promise.reject(new TypeError('GlitchLab: Failed to fetch'));
       }
 
@@ -47,6 +49,7 @@ class Network extends Patch {
 
     const RealXHR: typeof XMLHttpRequest = this.#originalXHR;
     const httpChaos: number = this.opt.httpChaos;
+    const seed: Seed = this.seed;
 
     const PatchedXHR: typeof XMLHttpRequest = ((): typeof XMLHttpRequest => {
       type OnName =
@@ -144,7 +147,7 @@ class Network extends Patch {
           this.#real.open(method, url, async, username, password);
         }
         send(body?: Document | XMLHttpRequestBodyInit | null): void {
-          this.#shouldFail = Math.random() < httpChaos;
+          this.#shouldFail = seed.random() < httpChaos;
           this.#real.send(body ?? null);
         }
         abort(): void {

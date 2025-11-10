@@ -16,7 +16,8 @@
     "paths": {
       "@config/*": ["./src/config/*"],
       "@logger/*": ["./src/logger/*"],
-      "@monkey/*": ["./src/monkey/*"]
+      "@monkey/*": ["./src/monkey/*"],
+      "@seed/*": ["./src/seed/*"]
     }
   },
   "include": ["../../src/**/*", "../../sandbox/**/*"]
