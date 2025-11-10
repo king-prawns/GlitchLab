@@ -1,23 +1,21 @@
-class Rng {
-  #useNative: boolean;
+class Seed {
   #rng: (() => number) | null = null;
 
-  constructor(deterministic: boolean, seed: number = 0xc0ffee) {
-    this.#useNative = !deterministic;
-    if (deterministic) {
+  constructor(seed: number | null) {
+    if (seed !== null) {
       this.#rng = this.#mulberry32(seed);
     }
   }
 
   random(): number {
-    return this.#useNative ? Math.random() : this.#rng!();
+    return this.#rng ? this.#rng() : Math.random();
   }
 
   // https://github.com/cprosche/mulberry32
   #mulberry32(seed: number): () => number {
     let t: number = seed >>> 0;
 
-    return () => {
+    return (): number => {
       t = (t + 0x6d2b79f5) >>> 0;
       let r: number = Math.imul(t ^ (t >>> 15), 1 | t);
       r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
@@ -27,4 +25,4 @@ class Rng {
   }
 }
 
-export default Rng;
+export default Seed;

@@ -12,7 +12,7 @@
 - 🕒 **Timer throttling** (setTimeout, setInterval, rAF)
 - 🌐 **Random HTTP blocking / delays**
 - 🎞️ **Configurable chaos profiles** (light → extreme)
-- 🔁 **Deterministic mode** for reproducible test runs
+- 🔁 **Seeded randomness** for reproducible test runs
 - ⏯️ **Playback state hiccups** randomly pause or seek playback
 - 🧠 **API hooks** to integrate chaos directly into your player tests
 
@@ -56,13 +56,13 @@ chaos.disable();
 
 ## ⚙️ Configuration
 
-| Option          | Type      | Default | Description                                                                        |
-| --------------- | --------- | ------- | ---------------------------------------------------------------------------------- |
-| `timerThrottle` | `number`  | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s) |
-| `httpChaos`     | `number`  | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                     |
-| `deterministic` | `boolean` | `false` | Reproduce chaos using a fixed seed                                                 |
-| `profiles`      | `object`  | -       | Named sets of fault configurations                                                 |
-| `quiet`         | `boolean` | `false` | Disable logging                                                                    |
+| Option          | Type           | Default | Description                                                                         |
+| --------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
+| `timerThrottle` | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
+| `httpChaos`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `seed`          | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
+| `profiles`      | `object`       | -       | Named sets of fault configurations                                                  |
+| `quiet`         | `boolean`      | `false` | Disable logging                                                                     |
 
 ---
 

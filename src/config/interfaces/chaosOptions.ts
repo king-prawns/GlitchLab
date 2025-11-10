@@ -1,7 +1,7 @@
 interface ChaosOptions {
   timerThrottle?: number;
   httpChaos?: number;
-  deterministic?: boolean;
+  seed?: number | null;
   quiet?: boolean;
 }
 
