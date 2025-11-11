@@ -39,7 +39,8 @@ import {GlitchLab} from 'glitchlab';
 
 const chaos: GlitchLab = new GlitchLab({
   timerThrottle: 0.6, // 60% of normal speed
-  httpChaos: 0.3 // 30% chance to delay/block requests
+  httpChaos: 0.3, // 30% chance to fail requests
+  playbackHiccups: 0.15 // 15% chance to pause/seek playback
 });
 
 // start chaos
@@ -56,22 +57,23 @@ chaos.disable();
 
 ## ⚙️ Configuration
 
-| Option          | Type           | Default | Description                                                                         |
-| --------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
-| `timerThrottle` | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
-| `httpChaos`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
-| `seed`          | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
-| `quiet`         | `boolean`      | `false` | Disable logging                                                                     |
+| Option            | Type           | Default | Description                                                                         |
+| ----------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
+| `timerThrottle`   | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
+| `httpChaos`       | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `playbackHiccups` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of playback hiccups (seek/pause)                      |
+| `seed`            | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
+| `quiet`           | `boolean`      | `false` | Disable logging                                                                     |
 
 ---
 
 ## 🎞️ Preset chaos profiles
 
-| Level   | timerThrottle | httpChaos |
-| ------- | ------------- | --------- |
-| light   | 0.9           | 0.1       |
-| medium  | 0.6           | 0.3       |
-| extreme | 0.4           | 0.6       |
+| Level   | timerThrottle | httpChaos | playbackHiccups |
+| ------- | ------------- | --------- | --------------- |
+| light   | 0.9           | 0.1       | 0.05            |
+| medium  | 0.6           | 0.3       | 0.15            |
+| extreme | 0.4           | 0.6       | 0.3             |
 
 ---
 
