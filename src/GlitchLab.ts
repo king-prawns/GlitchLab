@@ -10,7 +10,7 @@ class GlitchLab {
   #console: Console;
   #monkey: Monkey;
 
-  constructor(opt?: ChaosOptions | ChaosLevel) {
+  constructor(opt: ChaosOptions | ChaosLevel) {
     this.#config = new Config(opt);
     this.#console = new Logger(this.#config.opt).registerLogger();
 
