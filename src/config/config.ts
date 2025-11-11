@@ -20,13 +20,13 @@ class Config {
       let resolvedOpt: ChaosOptions = {};
 
       if (typeof opt === 'string') {
-        const preset: ChaosOptions = this.#chaosPresets[opt];
-        if (!preset) {
+        const chaosPreset: ChaosOptions = this.#chaosPresets[opt];
+        if (!chaosPreset) {
           throw new Error(
-            `Unknown Chaos Level "${opt}". Valid levels: ${Object.keys(this.#chaosPresets).join(', ')}`
+            `Unknown chaos level "${opt}". Valid chaos levels: ${Object.keys(this.#chaosPresets).join(', ')}`
           );
         }
-        resolvedOpt = preset;
+        resolvedOpt = chaosPreset;
       } else {
         resolvedOpt = opt;
       }
