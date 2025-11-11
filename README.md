@@ -11,7 +11,7 @@
 
 - 🕒 **Timer throttling** (setTimeout, setInterval, rAF)
 - 🌐 **Random HTTP blocking / delays**
-- 🎞️ **Configurable chaos profiles** (light → extreme)
+- 🎞️ **Preset chaos profiles** (light → extreme)
 - 🔁 **Seeded randomness** for reproducible test runs
 - ⏯️ **Playback state hiccups** randomly pause or seek playback
 - 🧠 **API hooks** to integrate chaos directly into your player tests
@@ -46,7 +46,7 @@ const chaos: GlitchLab = new GlitchLab({
 chaos.enable();
 
 // run your video player...
-player.play();
+player.load();
 
 // stop chaos
 chaos.disable();
@@ -61,20 +61,28 @@ chaos.disable();
 | `timerThrottle` | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
 | `httpChaos`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
 | `seed`          | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
-| `profiles`      | `object`       | -       | Named sets of fault configurations                                                  |
 | `quiet`         | `boolean`      | `false` | Disable logging                                                                     |
+
+---
+
+## 🎞️ Preset chaos profiles
+
+| Level   | timerThrottle | httpChaos |
+| ------- | ------------- | --------- |
+| light   | 0.9           | 0.1       |
+| medium  | 0.6           | 0.3       |
+| extreme | 0.4           | 0.6       |
 
 ---
 
 ## 🧩 Example
 
 ```typescript
-chaos.profile('unstable-network', {
-  timerThrottle: 0.8, // 80% of normal speed
-  httpChaos: 0.4 // 40% chance to delay/block requests
-});
+import {GlitchLab, ChaosLevel} from 'glitchlab';
 
-chaos.use('unstable-network');
+const chaos = new GlitchLab(ChaosLevel.medium);
+
+chaos.enable();
 ```
 
 ---
