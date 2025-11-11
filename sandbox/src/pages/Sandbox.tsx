@@ -3,7 +3,7 @@ import React, {JSX} from 'react';
 
 import {GlitchLab} from '../../../src';
 import Player from '../interfaces/Player';
-import DashjsPlayer from '../players/Dashjs';
+import TapePlayer from '../players/Tape';
 
 type IProps = Record<string, never>;
 type IState = {
@@ -37,11 +37,7 @@ class Sandbox extends React.Component<IProps, IState> {
         {this.state.status === 'Created' && <button onClick={this.#onStart}>START</button>}
         {this.state.status === 'Started' && <button onClick={this.#onStop}>STOP</button>}
         <p>Status: {this.state.status}</p>
-        {this.state.status !== 'Idle' && (
-          <div className="video-wrapper">
-            <video id="video" />
-          </div>
-        )}
+        <div id="video-wrapper"></div>
       </div>
     );
   }
@@ -50,20 +46,19 @@ class Sandbox extends React.Component<IProps, IState> {
     // eslint-disable-next-line no-console
     console.clear();
 
-    this.#glitchLab = new GlitchLab();
+    this.#glitchLab = new GlitchLab({});
 
-    this.#player = new DashjsPlayer();
+    const videoElementWrapper: HTMLDivElement = document.getElementById('video-wrapper') as HTMLDivElement;
+    this.#player = new TapePlayer(videoElementWrapper);
 
     this.setState({status: 'Created', libVersion: this.#glitchLab.version});
   };
 
   #onStart = (): void => {
-    const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
-    const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
-
     this.#glitchLab?.enable();
 
-    this.#player?.load(videoElement, MANIFEST_URL);
+    const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
+    this.#player?.load(MANIFEST_URL);
 
     this.setState({status: 'Started'});
   };

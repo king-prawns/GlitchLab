@@ -1,5 +1,5 @@
 interface Player {
-  load(videoElement: HTMLVideoElement, manifestUrl: string): void;
+  load(manifestUrl: string): void;
   stop(): void;
 }
 
