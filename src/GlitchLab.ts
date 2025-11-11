@@ -1,4 +1,5 @@
 import Config from '@config/config';
+import ChaosLevel from '@config/enum/chaosLevel';
 import type ChaosOptions from '@config/interfaces/chaosOptions';
 import type Console from '@logger/interfaces/console';
 import Logger from '@logger/logger';
@@ -9,7 +10,7 @@ class GlitchLab {
   #console: Console;
   #monkey: Monkey;
 
-  constructor(opt?: ChaosOptions) {
+  constructor(opt?: ChaosOptions | ChaosLevel) {
     this.#config = new Config(opt);
     this.#console = new Logger(this.#config.opt).registerLogger();
 
