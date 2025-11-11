@@ -15,23 +15,21 @@ class Config {
     quiet: false
   };
 
-  constructor(opt?: ChaosOptions | ChaosLevel) {
-    if (opt !== undefined) {
-      let resolvedOpt: ChaosOptions = {};
+  constructor(opt: ChaosOptions | ChaosLevel) {
+    let resolvedOpt: ChaosOptions = {};
 
-      if (typeof opt === 'string') {
-        const chaosPreset: ChaosOptions = this.#chaosPresets[opt];
-        if (!chaosPreset) {
-          throw new Error(
-            `Unknown chaos level "${opt}". Valid chaos levels: ${Object.keys(this.#chaosPresets).join(', ')}`
-          );
-        }
-        resolvedOpt = chaosPreset;
-      } else {
-        resolvedOpt = opt;
+    if (typeof opt === 'string') {
+      const chaosPreset: ChaosOptions = this.#chaosPresets[opt];
+      if (!chaosPreset) {
+        throw new Error(
+          `Unknown chaos level "${opt}". Valid chaos levels: ${Object.keys(this.#chaosPresets).join(', ')}`
+        );
       }
-      this.#update(resolvedOpt);
+      resolvedOpt = chaosPreset;
+    } else {
+      resolvedOpt = opt;
     }
+    this.#update(resolvedOpt);
   }
 
   get opt(): Required<ChaosOptions> {
