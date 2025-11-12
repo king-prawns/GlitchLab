@@ -1,7 +1,7 @@
 interface ChaosOptions {
   timerThrottle?: number;
   httpChaos?: number;
-  playbackHiccups?: number;
+  playbackChaos?: number;
   seed?: number | null;
   quiet?: boolean;
 }

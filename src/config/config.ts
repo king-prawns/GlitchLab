@@ -3,15 +3,15 @@ import ChaosOptions from './interfaces/chaosOptions';
 
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
-    [ChaosLevel.light]: {timerThrottle: 0.9, httpChaos: 0.1, playbackHiccups: 0.05},
-    [ChaosLevel.medium]: {timerThrottle: 0.6, httpChaos: 0.3, playbackHiccups: 0.15},
-    [ChaosLevel.extreme]: {timerThrottle: 0.4, httpChaos: 0.6, playbackHiccups: 0.3}
+    [ChaosLevel.light]: {timerThrottle: 0.9, httpChaos: 0.1, playbackChaos: 0.05},
+    [ChaosLevel.medium]: {timerThrottle: 0.6, httpChaos: 0.3, playbackChaos: 0.15},
+    [ChaosLevel.extreme]: {timerThrottle: 0.4, httpChaos: 0.6, playbackChaos: 0.3}
   };
 
   #options: Required<ChaosOptions> = {
     timerThrottle: 1.0,
     httpChaos: 0,
-    playbackHiccups: 0,
+    playbackChaos: 0,
     seed: null,
     quiet: false
   };
@@ -60,11 +60,11 @@ class Config {
       sanitizedOpt.httpChaos = opt.httpChaos;
     }
 
-    if (opt.playbackHiccups !== undefined) {
-      if (opt.playbackHiccups < 0 || opt.playbackHiccups > 1) {
-        throw new Error('"playbackHiccups" must be between 0 and 1');
+    if (opt.playbackChaos !== undefined) {
+      if (opt.playbackChaos < 0 || opt.playbackChaos > 1) {
+        throw new Error('"playbackChaos" must be between 0 and 1');
       }
-      sanitizedOpt.playbackHiccups = opt.playbackHiccups;
+      sanitizedOpt.playbackChaos = opt.playbackChaos;
     }
 
     if (opt.seed !== undefined) {

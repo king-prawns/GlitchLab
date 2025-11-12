@@ -4,7 +4,7 @@ class Playback extends Patch {
   // #originalXYZ: any | null = null;
 
   patch(): void {
-    if (this.opt.playbackHiccups === 0) return;
+    if (this.opt.playbackChaos === 0) return;
 
     this.console.info('Patching playback');
 
@@ -12,7 +12,7 @@ class Playback extends Patch {
   }
 
   restore(): void {
-    if (this.opt.playbackHiccups === 0) return;
+    if (this.opt.playbackChaos === 0) return;
 
     this.console.info('Restoring playback');
 
