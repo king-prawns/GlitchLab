@@ -1,6 +1,15 @@
 name: Publish Workflow
 
 on:
+  workflow_dispatch:
+    inputs:
+      manualRun:
+        description: 'To distinguish workflow_dispatch from regular push'
+        type: boolean
+        required: false
+        default: true
+
+on:
   push:
     branches: ['main']
 
@@ -8,8 +17,8 @@ jobs:
   publish-pipeline:
     name: 'Publish-pipeline'
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
+    # permissions:
+    #   id-token: write
     steps:
       - name: ✅ Checkout
         uses: actions/checkout@v5
