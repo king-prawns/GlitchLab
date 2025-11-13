@@ -2,25 +2,29 @@ import {Tape} from '@king-prawns/tape';
 
 import Player from '../interfaces/Player';
 
-class DashjsPlayer implements Player {
-  private player: Tape | null = null;
+class TapePlayer implements Player {
+  #player: Tape | null = null;
 
   constructor(videoElementWrapper: HTMLDivElement) {
-    this.player = new Tape(videoElementWrapper, {
+    this.#player = new Tape(videoElementWrapper, {
       stream: {
         autoplay: true
       }
+      // logger: {
+      //   enabled: true,
+      //   level: 0
+      // }
     });
   }
 
   public load(manifestUrl: string): void {
-    this.player?.load(manifestUrl);
+    this.#player?.load(manifestUrl);
   }
 
   public stop(): void {
-    this.player?.destroy();
-    this.player = null;
+    this.#player?.destroy();
+    this.#player = null;
   }
 }
 
-export default DashjsPlayer;
+export default TapePlayer;

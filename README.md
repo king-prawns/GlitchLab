@@ -13,7 +13,7 @@
 - 🌐 **Random HTTP blocking / delays**
 - 🎞️ **Preset chaos profiles** (light → extreme)
 - 🔁 **Seeded randomness** for reproducible test runs
-- ⏯️ **Playback state hiccups** randomly pause or seek playback
+- ⏯️ **Playback state hiccups** randomly seek playback
 - 🧠 **API hooks** to integrate chaos directly into your player tests
 
 ---
@@ -40,7 +40,7 @@ import {GlitchLab} from 'glitchlab';
 const chaos: GlitchLab = new GlitchLab({
   timerThrottle: 0.6, // 60% of normal speed
   httpChaos: 0.3, // 30% chance to fail requests
-  playbackChaos: 0.15 // 15% chance to pause/seek playback
+  playbackChaos: 0.15 // 15% chance to seek playback
 });
 
 // start chaos
@@ -61,7 +61,7 @@ chaos.disable();
 | --------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
 | `timerThrottle` | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
 | `httpChaos`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
-| `playbackChaos` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of playback hiccups (seek/pause)                      |
+| `playbackChaos` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of playback hiccups (seek)                            |
 | `seed`          | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
 | `quiet`         | `boolean`      | `false` | Disable logging                                                                     |
 
