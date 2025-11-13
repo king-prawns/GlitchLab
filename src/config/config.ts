@@ -3,35 +3,34 @@ import ChaosOptions from './interfaces/chaosOptions';
 
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
-    [ChaosLevel.light]: {timerThrottle: 0.9, httpChaos: 0.1},
-    [ChaosLevel.medium]: {timerThrottle: 0.6, httpChaos: 0.3},
-    [ChaosLevel.extreme]: {timerThrottle: 0.4, httpChaos: 0.6}
+    [ChaosLevel.light]: {timerThrottle: 0.9, httpChaos: 0.1, playbackChaos: 0.05},
+    [ChaosLevel.medium]: {timerThrottle: 0.6, httpChaos: 0.3, playbackChaos: 0.15},
+    [ChaosLevel.extreme]: {timerThrottle: 0.4, httpChaos: 0.6, playbackChaos: 0.3}
   };
 
   #options: Required<ChaosOptions> = {
     timerThrottle: 1.0,
     httpChaos: 0,
+    playbackChaos: 0,
     seed: null,
     quiet: false
   };
 
-  constructor(opt?: ChaosOptions | ChaosLevel) {
-    if (opt !== undefined) {
-      let resolvedOpt: ChaosOptions = {};
+  constructor(opt: ChaosOptions | ChaosLevel) {
+    let resolvedOpt: ChaosOptions = {};
 
-      if (typeof opt === 'string') {
-        const chaosPreset: ChaosOptions = this.#chaosPresets[opt];
-        if (!chaosPreset) {
-          throw new Error(
-            `Unknown chaos level "${opt}". Valid chaos levels: ${Object.keys(this.#chaosPresets).join(', ')}`
-          );
-        }
-        resolvedOpt = chaosPreset;
-      } else {
-        resolvedOpt = opt;
+    if (typeof opt === 'string') {
+      const chaosPreset: ChaosOptions = this.#chaosPresets[opt];
+      if (!chaosPreset) {
+        throw new Error(
+          `Unknown chaos level "${opt}". Valid chaos levels: ${Object.keys(this.#chaosPresets).join(', ')}`
+        );
       }
-      this.#update(resolvedOpt);
+      resolvedOpt = chaosPreset;
+    } else {
+      resolvedOpt = opt;
     }
+    this.#update(resolvedOpt);
   }
 
   get opt(): Required<ChaosOptions> {
@@ -59,6 +58,13 @@ class Config {
         throw new Error('"httpChaos" must be between 0 and 1');
       }
       sanitizedOpt.httpChaos = opt.httpChaos;
+    }
+
+    if (opt.playbackChaos !== undefined) {
+      if (opt.playbackChaos < 0 || opt.playbackChaos > 1) {
+        throw new Error('"playbackChaos" must be between 0 and 1');
+      }
+      sanitizedOpt.playbackChaos = opt.playbackChaos;
     }
 
     if (opt.seed !== undefined) {

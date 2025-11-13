@@ -3,11 +3,14 @@ import type Console from '@logger/interfaces/console';
 import Seed from '@seed/seed';
 
 abstract class Patch {
+  protected seed: Seed;
+
   constructor(
-    protected seed: Seed,
     protected opt: Required<ChaosOptions>,
     protected console: Console
-  ) {}
+  ) {
+    this.seed = new Seed(opt.seed);
+  }
 
   abstract patch(): void;
   abstract restore(): void;

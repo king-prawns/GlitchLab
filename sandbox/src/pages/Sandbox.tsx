@@ -2,8 +2,9 @@ import './Sandbox.css';
 import React, {JSX} from 'react';
 
 import {GlitchLab} from '../../../src';
-import Player from '../interfaces/Player';
-import TapePlayer from '../players/Tape';
+import type IPlayer from '../interfaces/Player';
+import Player from '../players/Tape';
+// import Player from '../players/Dashjs';
 
 type IProps = Record<string, never>;
 type IState = {
@@ -14,7 +15,7 @@ type IState = {
 class Sandbox extends React.Component<IProps, IState> {
   #glitchLab: GlitchLab | null = null;
 
-  #player: Player | null = null;
+  #player: IPlayer | null = null;
 
   constructor(props: IProps) {
     super(props);
@@ -49,7 +50,7 @@ class Sandbox extends React.Component<IProps, IState> {
     this.#glitchLab = new GlitchLab({});
 
     const videoElementWrapper: HTMLDivElement = document.getElementById('video-wrapper') as HTMLDivElement;
-    this.#player = new TapePlayer(videoElementWrapper);
+    this.#player = new Player(videoElementWrapper);
 
     this.setState({status: 'Created', libVersion: this.#glitchLab.version});
   };

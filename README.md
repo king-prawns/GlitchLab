@@ -13,7 +13,7 @@
 - 🌐 **Random HTTP blocking / delays**
 - 🎞️ **Preset chaos profiles** (light → extreme)
 - 🔁 **Seeded randomness** for reproducible test runs
-- ⏯️ **Playback state hiccups** randomly pause or seek playback
+- ⏯️ **Playback state hiccups** randomly seek playback
 - 🧠 **API hooks** to integrate chaos directly into your player tests
 
 ---
@@ -39,7 +39,8 @@ import {GlitchLab} from 'glitchlab';
 
 const chaos: GlitchLab = new GlitchLab({
   timerThrottle: 0.6, // 60% of normal speed
-  httpChaos: 0.3 // 30% chance to delay/block requests
+  httpChaos: 0.3, // 30% chance to fail requests
+  playbackChaos: 0.15 // 15% chance to seek playback
 });
 
 // start chaos
@@ -60,6 +61,7 @@ chaos.disable();
 | --------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
 | `timerThrottle` | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
 | `httpChaos`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `playbackChaos` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of playback hiccups (seek)                            |
 | `seed`          | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
 | `quiet`         | `boolean`      | `false` | Disable logging                                                                     |
 
@@ -67,11 +69,11 @@ chaos.disable();
 
 ## 🎞️ Preset chaos profiles
 
-| Level   | timerThrottle | httpChaos |
-| ------- | ------------- | --------- |
-| light   | 0.9           | 0.1       |
-| medium  | 0.6           | 0.3       |
-| extreme | 0.4           | 0.6       |
+| Level   | timerThrottle | httpChaos | playbackChaos |
+| ------- | ------------- | --------- | ------------- |
+| light   | 0.9           | 0.1       | 0.05          |
+| medium  | 0.6           | 0.3       | 0.15          |
+| extreme | 0.4           | 0.6       | 0.3           |
 
 ---
 
