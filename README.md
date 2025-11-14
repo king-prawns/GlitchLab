@@ -14,7 +14,7 @@
 - 🎞️ **Preset chaos profiles** (light → extreme)
 - 🔁 **Seeded randomness** for reproducible test runs
 - ⏯️ **Playback state hiccups** randomly seek playback
-- 🧠 **API hooks** to integrate chaos directly into your player tests
+- 🧠 **Event hooks** to integrate chaos directly into your player tests
 
 ---
 
