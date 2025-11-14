@@ -10,7 +10,11 @@
     "dashjs": "5.0.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-router-dom": "7.9.5"
+    "react-router-dom": "7.9.5",
+    "rx-player": "4.4.0",
+    "shaka-player": "4.16.9",
+    "video.js": "8.23.4",
+    "videojs-contrib-dash": "5.1.1"
   },
   "devDependencies": {
     "@types/react": "19.2.2",

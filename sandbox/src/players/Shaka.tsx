@@ -1,26 +1,29 @@
-import {MediaPlayer, MediaPlayerClass} from 'dashjs';
+import shaka from 'shaka-player';
 
 import type Player from '../interfaces/Player';
 
-class DashjsPlayer implements Player {
-  #player: MediaPlayerClass | null = null;
+class ShakaPlayer implements Player {
+  #player: shaka.Player | null = null;
 
   #videoElement: HTMLVideoElement;
 
   constructor(videoElementWrapper: HTMLDivElement) {
-    this.#player = MediaPlayer().create();
+    this.#player = new shaka.Player();
     this.#videoElement = document.createElement('video');
+    this.#videoElement.autoplay = true;
     videoElementWrapper.appendChild(this.#videoElement);
   }
 
   public load(manifestUrl: string): void {
-    this.#player?.initialize(this.#videoElement, manifestUrl, true);
+    this.#player?.attach(this.#videoElement).then(() => {
+      this.#player?.load(manifestUrl);
+    });
   }
 
   public stop(): void {
-    this.#player?.reset();
+    this.#player?.destroy();
     this.#player = null;
   }
 }
 
-export default DashjsPlayer;
+export default ShakaPlayer;
