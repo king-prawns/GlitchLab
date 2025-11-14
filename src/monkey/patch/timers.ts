@@ -1,4 +1,4 @@
-import ChaosEvent from '@dispatcher/enum/ChaosEvent';
+import ChaosEvent from '@dispatcher/enum/chaosEvent';
 
 import Patch from './patch';
 

@@ -1,6 +1,7 @@
 enum ChaosEvent {
   timerThrottle = 'timerThrottle',
-  httpChaos = 'httpChaos'
+  httpChaos = 'httpChaos',
+  playbackChaos = 'playbackChaos'
 }
 
 export default ChaosEvent;

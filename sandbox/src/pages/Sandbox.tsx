@@ -1,4 +1,5 @@
 import './Sandbox.css';
+import PlaybackChaosEvent from '@dispatcher/interfaces/playbackChaosEvent';
 import React, {JSX} from 'react';
 
 import {ChaosEvent, GlitchLab, HttpChaosEvent, TimerThrottleEvent} from '../../../src';
@@ -46,24 +47,30 @@ class Sandbox extends React.Component<IProps, IState> {
     );
   }
 
+  #onHttpChaos = (evt: HttpChaosEvent): void => {
+    const {url} = evt;
+    // eslint-disable-next-line no-console
+    console.log(ChaosEvent.httpChaos, {url});
+  };
+
+  #onPlaybackChaos = (evt: PlaybackChaosEvent): void => {
+    const {type, target} = evt;
+    // eslint-disable-next-line no-console
+    console.log(ChaosEvent.playbackChaos, {type, target});
+  };
+
+  #onTimerThrottle = (evt: TimerThrottleEvent): void => {
+    const {type, scaled, requested} = evt;
+    // eslint-disable-next-line no-console
+    console.log(ChaosEvent.timerThrottle, {type, scaled, requested});
+  };
+
   #onCreate = (): void => {
     // eslint-disable-next-line no-console
     console.clear();
 
     this.#glitchLab = new GlitchLab({
       playbackChaos: 0.2
-    });
-
-    this.#glitchLab.on(ChaosEvent.httpChaos, (evt: HttpChaosEvent) => {
-      const {url} = evt;
-      // eslint-disable-next-line no-console
-      console.log(ChaosEvent.httpChaos, {url});
-    });
-
-    this.#glitchLab.on(ChaosEvent.timerThrottle, (evt: TimerThrottleEvent) => {
-      const {type, scaled, requested} = evt;
-      // eslint-disable-next-line no-console
-      console.log(ChaosEvent.timerThrottle, {type, scaled, requested});
     });
 
     const videoElementWrapper: HTMLDivElement = document.getElementById('video-wrapper') as HTMLDivElement;
@@ -75,6 +82,10 @@ class Sandbox extends React.Component<IProps, IState> {
   #onStart = (): void => {
     this.#glitchLab?.enable();
 
+    this.#glitchLab?.on(ChaosEvent.httpChaos, this.#onHttpChaos);
+    this.#glitchLab?.on(ChaosEvent.timerThrottle, this.#onTimerThrottle);
+    this.#glitchLab?.on(ChaosEvent.playbackChaos, this.#onPlaybackChaos);
+
     const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
     this.#player?.load(MANIFEST_URL);
 
@@ -83,6 +94,10 @@ class Sandbox extends React.Component<IProps, IState> {
 
   #onStop = (): void => {
     this.#glitchLab?.disable();
+
+    this.#glitchLab?.off(ChaosEvent.httpChaos, this.#onHttpChaos);
+    this.#glitchLab?.off(ChaosEvent.timerThrottle, this.#onTimerThrottle);
+    this.#glitchLab?.off(ChaosEvent.playbackChaos, this.#onPlaybackChaos);
 
     this.#player?.stop();
     this.#player = null;

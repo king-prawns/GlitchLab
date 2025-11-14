@@ -1,5 +1,5 @@
 import Dispatcher from '@dispatcher/dispatcher';
-import ChaosEvent from '@dispatcher/enum/ChaosEvent';
+import ChaosEvent from '@dispatcher/enum/chaosEvent';
 import Seed from '@seed/seed';
 
 import Patch from './patch';
@@ -35,7 +35,7 @@ class Network extends Patch {
 
     const patched: typeof fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       if (this.seed.random() < this.opt.httpChaos) {
-        this.dispatcher.emit(ChaosEvent.httpChaos, {url: input.toString()});
+        this.dispatcher.emit(ChaosEvent.httpChaos, {type: 'fetch', url: input.toString()});
 
         return Promise.reject(new TypeError('GlitchLab: Failed to fetch'));
       }
@@ -99,7 +99,8 @@ class Network extends Patch {
           this.#real.addEventListener('load', (e: Event) => {
             if (this.#shouldFail) {
               this.#failed = true;
-              dispatcher.emit(ChaosEvent.httpChaos, {url: this.#real.responseURL});
+              dispatcher.emit(ChaosEvent.httpChaos, {type: 'xhr', url: this.#real.responseURL});
+
               this.#dispatch('error', new ProgressEvent('error'));
 
               return;

@@ -2,7 +2,7 @@ import Config from '@config/config';
 import ChaosLevel from '@config/enum/chaosLevel';
 import type ChaosOptions from '@config/interfaces/chaosOptions';
 import Dispatcher from '@dispatcher/dispatcher';
-import ChaosEvents from '@dispatcher/interfaces/ChaosEvents';
+import ChaosEvents from '@dispatcher/interfaces/chaosEvents';
 import type Console from '@logger/interfaces/console';
 import Logger from '@logger/logger';
 import Monkey from '@monkey/monkey';
