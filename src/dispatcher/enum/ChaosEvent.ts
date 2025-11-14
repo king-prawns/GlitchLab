@@ -1,4 +1,5 @@
 enum ChaosEvent {
+  timerThrottle = 'timerThrottle',
   httpChaos = 'httpChaos'
 }
 
