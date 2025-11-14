@@ -15,6 +15,7 @@
     "baseUrl": "../../",
     "paths": {
       "@config/*": ["./src/config/*"],
+      "@dispatcher/*": ["./src/dispatcher/*"],
       "@logger/*": ["./src/logger/*"],
       "@monkey/*": ["./src/monkey/*"],
       "@seed/*": ["./src/seed/*"]
