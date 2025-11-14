@@ -1,3 +1,5 @@
+import ChaosEvent from '@dispatcher/enum/chaosEvent';
+
 import Patch from './patch';
 
 class Timers extends Patch {
@@ -46,7 +48,9 @@ class Timers extends Patch {
       if (typeof handler === 'function') {
         return original.call(
           window,
-          function () {
+          () => {
+            this.dispatcher.emit(ChaosEvent.timerThrottle, {type: 'setTimeout', scaled, requested});
+
             (handler as (...a: unknown[]) => void).apply(window, args);
           },
           scaled
@@ -79,7 +83,9 @@ class Timers extends Patch {
       if (typeof handler === 'function') {
         return original.call(
           window,
-          function () {
+          () => {
+            this.dispatcher.emit(ChaosEvent.timerThrottle, {type: 'setInterval', scaled, requested});
+
             (handler as (...a: unknown[]) => void).apply(window, args);
           },
           scaled
@@ -108,6 +114,13 @@ class Timers extends Patch {
         }
 
         const virtualTs: number = this.#originalRafAnchor + (realTs - this.#originalRafAnchor) * t;
+
+        this.dispatcher.emit(ChaosEvent.timerThrottle, {
+          type: 'requestAnimationFrame',
+          scaled: virtualTs,
+          requested: realTs
+        });
+
         callback(virtualTs);
       });
     }) as typeof requestAnimationFrame;

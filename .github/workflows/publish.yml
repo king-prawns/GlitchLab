@@ -8,8 +8,9 @@ jobs:
   publish-pipeline:
     name: 'Publish-pipeline'
     runs-on: ubuntu-latest
-    # permissions:
-    #   id-token: write
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: ✅ Checkout
         uses: actions/checkout@v5
