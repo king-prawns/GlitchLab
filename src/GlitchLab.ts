@@ -18,7 +18,7 @@ class GlitchLab {
     this.#dispatcher = new Dispatcher();
     this.#console = new Logger(this.#config.opt).registerLogger();
 
-    this.#monkey = new Monkey(this.#config.opt, this.#console);
+    this.#monkey = new Monkey(this.#config.opt, this.#dispatcher, this.#console);
 
     this.#console.info(`GlitchLab v${this.version}`);
     this.#console.info('GlitchLab config:', this.#config.opt);

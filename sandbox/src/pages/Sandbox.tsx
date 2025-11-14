@@ -1,7 +1,7 @@
 import './Sandbox.css';
 import React, {JSX} from 'react';
 
-import {GlitchLab} from '../../../src';
+import {ChaosEvent, GlitchLab, HttpChaosEvent} from '../../../src';
 import type IPlayer from '../interfaces/Player';
 import Player from '../players/Tape';
 // import Player from '../players/Shaka';
@@ -50,7 +50,14 @@ class Sandbox extends React.Component<IProps, IState> {
     // eslint-disable-next-line no-console
     console.clear();
 
-    this.#glitchLab = new GlitchLab({});
+    this.#glitchLab = new GlitchLab({
+      httpChaos: 0.1
+    });
+
+    this.#glitchLab.on(ChaosEvent.httpChaos, (evt: HttpChaosEvent) => {
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.httpChaos, evt.url);
+    });
 
     const videoElementWrapper: HTMLDivElement = document.getElementById('video-wrapper') as HTMLDivElement;
     this.#player = new Player(videoElementWrapper);
