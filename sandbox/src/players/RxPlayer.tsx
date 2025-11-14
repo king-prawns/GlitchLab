@@ -1,26 +1,30 @@
-import {MediaPlayer, MediaPlayerClass} from 'dashjs';
+import Rx from 'rx-player';
 
 import type Player from '../interfaces/Player';
 
-class DashjsPlayer implements Player {
-  #player: MediaPlayerClass | null = null;
+class RxPlayer implements Player {
+  #player: Rx | null = null;
 
   #videoElement: HTMLVideoElement;
 
   constructor(videoElementWrapper: HTMLDivElement) {
-    this.#player = MediaPlayer().create();
     this.#videoElement = document.createElement('video');
+    this.#player = new Rx({videoElement: this.#videoElement});
     videoElementWrapper.appendChild(this.#videoElement);
   }
 
   public load(manifestUrl: string): void {
-    this.#player?.initialize(this.#videoElement, manifestUrl, true);
+    this.#player?.loadVideo({
+      url: manifestUrl,
+      transport: 'dash',
+      autoPlay: true
+    });
   }
 
   public stop(): void {
-    this.#player?.reset();
+    this.#player?.stop();
     this.#player = null;
   }
 }
 
-export default DashjsPlayer;
+export default RxPlayer;

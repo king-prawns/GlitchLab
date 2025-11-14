@@ -1,6 +1,6 @@
 import {Tape} from '@king-prawns/tape';
 
-import Player from '../interfaces/Player';
+import type Player from '../interfaces/Player';
 
 class TapePlayer implements Player {
   #player: Tape | null = null;
