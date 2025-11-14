@@ -2,7 +2,14 @@ import './Sandbox.css';
 import PlaybackChaosEvent from '@dispatcher/interfaces/playbackChaosEvent';
 import React, {JSX} from 'react';
 
-import {ChaosEvent, GlitchLab, HttpChaosEvent, TimerThrottleEvent} from '../../../src';
+import {
+  ChaosEvent,
+  ChaosLevel,
+  ChaosOptions,
+  GlitchLab,
+  HttpChaosEvent,
+  TimerThrottleEvent
+} from '../../../src';
 import type IPlayer from '../interfaces/Player';
 import Player from '../players/Tape';
 // import Player from '../players/Shaka';
@@ -18,6 +25,8 @@ type IState = {
 
 class Sandbox extends React.Component<IProps, IState> {
   #glitchLab: GlitchLab | null = null;
+
+  #glitchLabOptions: ChaosOptions | ChaosLevel = {};
 
   #player: IPlayer | null = null;
 
@@ -69,9 +78,7 @@ class Sandbox extends React.Component<IProps, IState> {
     // eslint-disable-next-line no-console
     console.clear();
 
-    this.#glitchLab = new GlitchLab({
-      playbackChaos: 0.2
-    });
+    this.#glitchLab = new GlitchLab(this.#glitchLabOptions);
 
     const videoElementWrapper: HTMLDivElement = document.getElementById('video-wrapper') as HTMLDivElement;
     this.#player = new Player(videoElementWrapper);

@@ -109,7 +109,7 @@ class Playback extends Patch {
 
       const direction: number = this.seed.random() < 0.5 ? -1 : 1;
       const magnitude: number = 1 + this.seed.random() * 4; // 1..5 seconds
-      const target: number = el.currentTime + direction * magnitude;
+      const target: number = Math.max(0, el.currentTime + direction * magnitude);
       try {
         this.dispatcher.emit(ChaosEvent.playbackChaos, {type: 'seek', target});
 

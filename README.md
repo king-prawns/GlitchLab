@@ -89,6 +89,57 @@ chaos.enable();
 
 ---
 
+## 🪝 Event hooks
+
+You can listen to what **GlitchLab** is doing at runtime and plug that into your logs or tests.
+
+GlitchLab exposes two methods:
+
+- `on(eventName, callback)` – subscribe to an event
+- `off(eventName, callback)` – unsubscribe (using the **same** callback reference)
+
+Available events:
+
+- `'timerThrottle'`
+- `'httpChaos'`
+- `'playbackChaos'`
+
+```typescript
+import {GlitchLab, ChaosLevel, ChaosEvent, HttpChaosEvent} from 'glitchlab';
+
+const chaos = new GlitchLab(ChaosLevel.light);
+
+const httpChaosListener = (evt: HttpChaosEvent) => {
+  // called when an HTTP request is delayed or failed on purpose
+  // evt.type: 'fetch' | 'xhr'
+  // evt.url: URL of the request
+  console.log('[httpChaos]', evt.type, evt.url);
+};
+
+chaos.on(ChaosEvent.httpChaos, httpChaosListener);
+
+// Later, when you're done listening
+chaos.off(ChaosEvent.httpChaos, httpChaosListener);
+```
+
+```typescript
+chaos.on(ChaosEvent.timerThrottle, evt => {
+  // called whenever a timer is slowed down
+  // evt.type: 'setTimeout' | 'setInterval' | 'requestAnimationFrame'
+  // evt.requested: original delay, evt.scaled: effective delay
+  console.log('[timerThrottle]', evt.type, evt.requested, evt.scaled);
+});
+
+chaos.on(ChaosEvent.playbackChaos, evt => {
+  // called when playback randomly seek
+  // evt.type: 'seek'
+  // evt.target: target playback position
+  console.log('[playbackChaos]', evt.type, evt.target);
+});
+```
+
+---
+
 ## 🧠 Why GlitchLab?
 
 Chaos is the best teacher, especially for video playback.
