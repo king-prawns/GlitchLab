@@ -63,9 +63,21 @@ class Sandbox extends React.Component<IProps, IState> {
   };
 
   #onPlaybackChaos = (evt: PlaybackChaosEvent): void => {
-    const {type, target} = evt;
-    // eslint-disable-next-line no-console
-    console.log(ChaosEvent.playbackChaos, {type, target});
+    const {type} = evt;
+    if (type === 'seek') {
+      const {targetTime} = evt;
+
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.playbackChaos, {type, targetTime});
+    } else {
+      const {currentTime} = evt;
+
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.playbackChaos, {
+        type,
+        currentTime
+      });
+    }
   };
 
   #onTimerThrottle = (evt: TimerThrottleEvent): void => {

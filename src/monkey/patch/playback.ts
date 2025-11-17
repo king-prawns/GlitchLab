@@ -11,7 +11,7 @@ class Playback extends Patch {
   #onTickMap: Map<HTMLVideoElement, EventListener> = new Map();
 
   patch(): void {
-    if (this.opt.playbackChaos === 0) return;
+    if (this.opt.playbackChaos.seek === 0 && this.opt.playbackChaos.stall === 0) return;
 
     this.console.info('Patching playback');
 
@@ -25,7 +25,7 @@ class Playback extends Patch {
   }
 
   restore(): void {
-    if (this.opt.playbackChaos === 0) return;
+    if (this.opt.playbackChaos.seek === 0 && this.opt.playbackChaos.stall === 0) return;
 
     this.console.info('Restoring playback');
 
@@ -104,18 +104,30 @@ class Playback extends Patch {
 
         return;
       }
-      const p: number = this.opt.playbackChaos;
-      if (this.seed.random() >= p) return;
 
-      const direction: number = this.seed.random() < 0.5 ? -1 : 1;
-      const magnitude: number = 1 + this.seed.random() * 4; // 1..5 seconds
-      const target: number = Math.max(0, el.currentTime + direction * magnitude);
-      try {
-        this.dispatcher.emit(ChaosEvent.playbackChaos, {type: 'seek', target});
+      const shouldStall: boolean = this.seed.random() < this.opt.playbackChaos.stall;
+      if (shouldStall) {
+        const waitingEvent: Event = new Event('waiting');
+        el.dispatchEvent(waitingEvent);
 
-        el.currentTime = target;
-      } catch {
-        /* ignore */
+        this.dispatcher.emit(ChaosEvent.playbackChaos, {
+          type: 'waiting',
+          currentTime: el.currentTime
+        });
+      }
+
+      const shouldSeek: boolean = this.seed.random() < this.opt.playbackChaos.seek;
+      if (shouldSeek) {
+        const direction: number = this.seed.random() < 0.5 ? -1 : 1;
+        const magnitude: number = 1 + this.seed.random() * 4; // 1..5 seconds
+        const targetTime: number = Math.max(0, el.currentTime + direction * magnitude);
+        try {
+          this.dispatcher.emit(ChaosEvent.playbackChaos, {type: 'seek', targetTime});
+
+          el.currentTime = targetTime;
+        } catch {
+          /* ignore */
+        }
       }
     };
 
@@ -130,6 +142,7 @@ class Playback extends Patch {
       el.removeEventListener('timeupdate', onTick);
       this.#onTickMap.delete(el);
     }
+
     this.#wired.delete(el);
   }
 
