@@ -1,17 +1,30 @@
 import ChaosLevel from './enum/chaosLevel';
 import ChaosOptions from './interfaces/chaosOptions';
+import PlaybackChaosOptions from './interfaces/PlaybackChaosOptions';
 
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
-    [ChaosLevel.light]: {timerThrottle: 0.9, httpChaos: 0.1, playbackChaos: 0.05},
-    [ChaosLevel.medium]: {timerThrottle: 0.6, httpChaos: 0.3, playbackChaos: 0.15},
-    [ChaosLevel.extreme]: {timerThrottle: 0.4, httpChaos: 0.6, playbackChaos: 0.3}
+    [ChaosLevel.light]: {
+      timerThrottle: 0.9,
+      httpChaos: 0.1,
+      playbackChaos: {seek: 0.05, stall: 0.1}
+    },
+    [ChaosLevel.medium]: {
+      timerThrottle: 0.6,
+      httpChaos: 0.3,
+      playbackChaos: {seek: 0.15, stall: 0.2}
+    },
+    [ChaosLevel.extreme]: {
+      timerThrottle: 0.4,
+      httpChaos: 0.6,
+      playbackChaos: {seek: 0.3, stall: 0.4}
+    }
   };
 
-  #options: Required<ChaosOptions> = {
+  #options: DeepRequired<ChaosOptions> = {
     timerThrottle: 1.0,
     httpChaos: 0,
-    playbackChaos: 0,
+    playbackChaos: {seek: 0, stall: 0},
     seed: null,
     quiet: false
   };
@@ -30,10 +43,11 @@ class Config {
     } else {
       resolvedOpt = opt;
     }
+
     this.#update(resolvedOpt);
   }
 
-  get opt(): Required<ChaosOptions> {
+  get opt(): DeepRequired<ChaosOptions> {
     return this.#options;
   }
 
@@ -61,10 +75,27 @@ class Config {
     }
 
     if (opt.playbackChaos !== undefined) {
-      if (opt.playbackChaos < 0 || opt.playbackChaos > 1) {
-        throw new Error('"playbackChaos" must be between 0 and 1');
+      const sanitizedPlaybackChaos: Partial<PlaybackChaosOptions> = {};
+
+      if (opt.playbackChaos.seek !== undefined) {
+        if (opt.playbackChaos.seek < 0 || opt.playbackChaos.seek > 1) {
+          throw new Error('"playbackChaos.seek" must be between 0 and 1');
+        }
+
+        sanitizedPlaybackChaos.seek = opt.playbackChaos.seek;
       }
-      sanitizedOpt.playbackChaos = opt.playbackChaos;
+
+      if (opt.playbackChaos.stall !== undefined) {
+        if (opt.playbackChaos.stall < 0 || opt.playbackChaos.stall > 1) {
+          throw new Error('"playbackChaos.stall" must be between 0 and 1');
+        }
+
+        sanitizedPlaybackChaos.stall = opt.playbackChaos.stall;
+      }
+
+      if (Object.keys(sanitizedPlaybackChaos).length > 0) {
+        sanitizedOpt.playbackChaos = sanitizedPlaybackChaos;
+      }
     }
 
     if (opt.seed !== undefined) {

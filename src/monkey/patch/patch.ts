@@ -7,7 +7,7 @@ abstract class Patch {
   protected seed: Seed;
 
   constructor(
-    protected opt: Required<ChaosOptions>,
+    protected opt: DeepRequired<ChaosOptions>,
     protected dispatcher: Dispatcher,
     protected console: Console
   ) {

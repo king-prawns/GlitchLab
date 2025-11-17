@@ -10,7 +10,7 @@ import Timers from './patch/timers';
 class Monkey {
   #monkeys: Array<Patch> = [];
 
-  constructor(opt: Required<ChaosOptions>, dispatcher: Dispatcher, console: Console) {
+  constructor(opt: DeepRequired<ChaosOptions>, dispatcher: Dispatcher, console: Console) {
     this.#monkeys.push(
       new Timers(opt, dispatcher, console),
       new Network(opt, dispatcher, console),
