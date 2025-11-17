@@ -5,9 +5,9 @@ import ChaosOptions from '@config/interfaces/chaosOptions';
 import Console from './interfaces/console';
 
 class Logger {
-  #opt: Required<ChaosOptions>;
+  #opt: DeepRequired<ChaosOptions>;
 
-  constructor(opt: Required<ChaosOptions>) {
+  constructor(opt: DeepRequired<ChaosOptions>) {
     this.#opt = opt;
   }
 

@@ -1,5 +1,6 @@
 import ChaosLevel from './enum/chaosLevel';
 import ChaosOptions from './interfaces/chaosOptions';
+import PlaybackChaosOptions from './interfaces/PlaybackChaosOptions';
 
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
@@ -20,7 +21,7 @@ class Config {
     }
   };
 
-  #options: Required<ChaosOptions> = {
+  #options: DeepRequired<ChaosOptions> = {
     timerThrottle: 1.0,
     httpChaos: 0,
     playbackChaos: {seek: 0, stall: 0},
@@ -42,10 +43,11 @@ class Config {
     } else {
       resolvedOpt = opt;
     }
+
     this.#update(resolvedOpt);
   }
 
-  get opt(): Required<ChaosOptions> {
+  get opt(): DeepRequired<ChaosOptions> {
     return this.#options;
   }
 
@@ -73,18 +75,27 @@ class Config {
     }
 
     if (opt.playbackChaos !== undefined) {
-      if (opt.playbackChaos.seek < 0 || opt.playbackChaos.seek > 1) {
-        throw new Error('"playbackChaos.seek" must be between 0 and 1');
+      const sanitizedPlaybackChaos: Partial<PlaybackChaosOptions> = {};
+
+      if (opt.playbackChaos.seek !== undefined) {
+        if (opt.playbackChaos.seek < 0 || opt.playbackChaos.seek > 1) {
+          throw new Error('"playbackChaos.seek" must be between 0 and 1');
+        }
+
+        sanitizedPlaybackChaos.seek = opt.playbackChaos.seek;
       }
 
-      if (opt.playbackChaos.stall < 0 || opt.playbackChaos.stall > 1) {
-        throw new Error('"playbackChaos.stall" must be between 0 and 1');
+      if (opt.playbackChaos.stall !== undefined) {
+        if (opt.playbackChaos.stall < 0 || opt.playbackChaos.stall > 1) {
+          throw new Error('"playbackChaos.stall" must be between 0 and 1');
+        }
+
+        sanitizedPlaybackChaos.stall = opt.playbackChaos.stall;
       }
 
-      sanitizedOpt.playbackChaos = {
-        seek: opt.playbackChaos.seek,
-        stall: opt.playbackChaos.stall
-      };
+      if (Object.keys(sanitizedPlaybackChaos).length > 0) {
+        sanitizedOpt.playbackChaos = sanitizedPlaybackChaos;
+      }
     }
 
     if (opt.seed !== undefined) {
