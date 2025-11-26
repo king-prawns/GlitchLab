@@ -1,5 +1,6 @@
 interface HttpChaosEvent {
-  type: 'fetch' | 'xhr';
+  kind: 'fetch' | 'xhr';
+  type: 'fail' | 'delay';
   url: string;
 }
 

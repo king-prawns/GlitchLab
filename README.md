@@ -42,7 +42,7 @@ const chaos: GlitchLab = new GlitchLab({
   httpChaos: 0.3, // 30% chance to fail requests
   playbackChaos: {
     seek: 0.15, // 15% chance to seek playback
-    stall: 0.25 // 12% chance to emit 'waiting' event
+    stall: 0.25 // 25% chance to emit 'waiting' event
   }
 });
 
@@ -115,7 +115,7 @@ const chaos = new GlitchLab(ChaosLevel.light);
 
 const httpChaosListener = (evt: HttpChaosEvent) => {
   // called when an HTTP request is delayed or failed on purpose
-  // evt.type: 'fetch' | 'xhr'
+  // evt.kind: 'fetch' | 'xhr'
   // evt.url: URL of the request
   console.log('[httpChaos]', evt.type, evt.url);
 };
@@ -129,16 +129,17 @@ chaos.off(ChaosEvent.httpChaos, httpChaosListener);
 ```typescript
 chaos.on(ChaosEvent.timerThrottle, evt => {
   // called whenever a timer is slowed down
-  // evt.type: 'setTimeout' | 'setInterval' | 'requestAnimationFrame'
+  // evt.kind: 'setTimeout' | 'setInterval' | 'requestAnimationFrame'
   // evt.requested: original delay, evt.scaled: effective delay
   console.log('[timerThrottle]', evt.type, evt.requested, evt.scaled);
 });
 
 chaos.on(ChaosEvent.playbackChaos, evt => {
   // called when GlitchLab perturbs playback or when the video element changes state
+  // evt.kind: 'HTMLVideoElement'
   // evt.type: 'seek' | 'waiting'
-  // when evt.type === 'seek': evt.targetTime is the new playback position
-  // when evt.type === 'waiting': evt.currentTime is set
+  // when evt.type === 'seek': evt.currentTime is the new playback position
+  // when evt.type === 'waiting': evt.currentTime is the current playback position
   console.log('[playbackChaos]', evt.type, evt);
 });
 ```

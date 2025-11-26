@@ -1,29 +1,30 @@
 import ChaosLevel from './enum/chaosLevel';
 import ChaosOptions from './interfaces/chaosOptions';
-import PlaybackChaosOptions from './interfaces/PlaybackChaosOptions';
+import HttpChaosOptions from './interfaces/httpChaosOptions';
+import PlaybackChaosOptions from './interfaces/playbackChaosOptions';
 
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
     [ChaosLevel.light]: {
       timerThrottle: 0.9,
-      httpChaos: 0.1,
+      httpChaos: {fail: 0.1, delay: 0.1},
       playbackChaos: {seek: 0.05, stall: 0.1}
     },
     [ChaosLevel.medium]: {
       timerThrottle: 0.6,
-      httpChaos: 0.3,
+      httpChaos: {fail: 0.3, delay: 0.3},
       playbackChaos: {seek: 0.15, stall: 0.2}
     },
     [ChaosLevel.extreme]: {
       timerThrottle: 0.4,
-      httpChaos: 0.6,
+      httpChaos: {fail: 0.6, delay: 0.6},
       playbackChaos: {seek: 0.3, stall: 0.4}
     }
   };
 
   #options: DeepRequired<ChaosOptions> = {
     timerThrottle: 1.0,
-    httpChaos: 0,
+    httpChaos: {fail: 0, delay: 0},
     playbackChaos: {seek: 0, stall: 0},
     seed: null,
     quiet: false
@@ -68,10 +69,27 @@ class Config {
     }
 
     if (opt.httpChaos !== undefined) {
-      if (opt.httpChaos < 0 || opt.httpChaos > 1) {
-        throw new Error('"httpChaos" must be between 0 and 1');
+      const sanitizedHttpChaos: Partial<HttpChaosOptions> = {};
+
+      if (opt.httpChaos.fail !== undefined) {
+        if (opt.httpChaos.fail < 0 || opt.httpChaos.fail > 1) {
+          throw new Error('"httpChaos.fail" must be between 0 and 1');
+        }
+
+        sanitizedHttpChaos.fail = opt.httpChaos.fail;
       }
-      sanitizedOpt.httpChaos = opt.httpChaos;
+
+      if (opt.httpChaos.delay !== undefined) {
+        if (opt.httpChaos.delay < 0 || opt.httpChaos.delay > 1) {
+          throw new Error('"httpChaos.delay" must be between 0 and 1');
+        }
+
+        sanitizedHttpChaos.delay = opt.httpChaos.delay;
+      }
+
+      if (Object.keys(sanitizedHttpChaos).length > 0) {
+        sanitizedOpt.httpChaos = sanitizedHttpChaos;
+      }
     }
 
     if (opt.playbackChaos !== undefined) {

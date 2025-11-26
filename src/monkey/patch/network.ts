@@ -1,3 +1,4 @@
+import HttpChaosOptions from '@config/interfaces/httpChaosOptions';
 import Dispatcher from '@dispatcher/dispatcher';
 import ChaosEvent from '@dispatcher/enum/chaosEvent';
 import Seed from '@seed/seed';
@@ -9,7 +10,7 @@ class Network extends Patch {
   #originalXHR: typeof XMLHttpRequest | null = null;
 
   patch(): void {
-    if (this.opt.httpChaos === 0) return;
+    if (this.opt.httpChaos.fail === 0 && this.opt.httpChaos.delay === 0) return;
 
     this.console.info('Patching network');
 
@@ -18,7 +19,7 @@ class Network extends Patch {
   }
 
   restore(): void {
-    if (this.opt.httpChaos === 0) return;
+    if (this.opt.httpChaos.fail === 0 && this.opt.httpChaos.delay === 0) return;
 
     this.console.info('Restoring network');
 
@@ -34,8 +35,8 @@ class Network extends Patch {
     const original: typeof fetch = this.#originalFetch!;
 
     const patched: typeof fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      if (this.seed.random() < this.opt.httpChaos) {
-        this.dispatcher.emit(ChaosEvent.httpChaos, {type: 'fetch', url: input.toString()});
+      if (this.seed.random() < this.opt.httpChaos.fail) {
+        this.dispatcher.emit(ChaosEvent.httpChaos, {kind: 'fetch', type: 'fail', url: input.toString()});
 
         return Promise.reject(new TypeError('GlitchLab: Failed to fetch'));
       }
@@ -53,7 +54,7 @@ class Network extends Patch {
 
     const RealXHR: typeof XMLHttpRequest = this.#originalXHR;
     const dispatcher: Dispatcher = this.dispatcher;
-    const httpChaos: number = this.opt.httpChaos;
+    const httpChaos: Required<HttpChaosOptions> = this.opt.httpChaos;
     const seed: Seed = this.seed;
 
     const PatchedXHR: typeof XMLHttpRequest = ((): typeof XMLHttpRequest => {
@@ -99,7 +100,7 @@ class Network extends Patch {
           this.#real.addEventListener('load', (e: Event) => {
             if (this.#shouldFail) {
               this.#failed = true;
-              dispatcher.emit(ChaosEvent.httpChaos, {type: 'xhr', url: this.#real.responseURL});
+              dispatcher.emit(ChaosEvent.httpChaos, {kind: 'xhr', type: 'fail', url: this.#real.responseURL});
 
               this.#dispatch('error', new ProgressEvent('error'));
 
@@ -154,7 +155,7 @@ class Network extends Patch {
           this.#real.open(method, url, async, username, password);
         }
         send(body?: Document | XMLHttpRequestBodyInit | null): void {
-          this.#shouldFail = seed.random() < httpChaos;
+          this.#shouldFail = seed.random() < httpChaos.fail;
           this.#real.send(body ?? null);
         }
         abort(): void {

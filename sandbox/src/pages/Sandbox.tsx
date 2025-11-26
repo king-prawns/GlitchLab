@@ -57,33 +57,26 @@ class Sandbox extends React.Component<IProps, IState> {
   }
 
   #onHttpChaos = (evt: HttpChaosEvent): void => {
-    const {url} = evt;
+    const {kind, url} = evt;
     // eslint-disable-next-line no-console
-    console.log(ChaosEvent.httpChaos, {url});
+    console.log(ChaosEvent.httpChaos, {kind, url});
   };
 
   #onPlaybackChaos = (evt: PlaybackChaosEvent): void => {
-    const {type} = evt;
-    if (type === 'seek') {
-      const {targetTime} = evt;
+    const {kind, type, currentTime} = evt;
 
-      // eslint-disable-next-line no-console
-      console.log(ChaosEvent.playbackChaos, {type, targetTime});
-    } else {
-      const {currentTime} = evt;
-
-      // eslint-disable-next-line no-console
-      console.log(ChaosEvent.playbackChaos, {
-        type,
-        currentTime
-      });
-    }
+    // eslint-disable-next-line no-console
+    console.log(ChaosEvent.playbackChaos, {
+      kind,
+      type,
+      currentTime
+    });
   };
 
   #onTimerThrottle = (evt: TimerThrottleEvent): void => {
-    const {type, scaled, requested} = evt;
+    const {kind, scaled, requested} = evt;
     // eslint-disable-next-line no-console
-    console.log(ChaosEvent.timerThrottle, {type, scaled, requested});
+    console.log(ChaosEvent.timerThrottle, {kind, scaled, requested});
   };
 
   #onCreate = (): void => {

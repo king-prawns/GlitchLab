@@ -1,5 +1,5 @@
 interface TimerThrottleEvent {
-  type: 'setTimeout' | 'setInterval' | 'requestAnimationFrame';
+  kind: 'setTimeout' | 'setInterval' | 'requestAnimationFrame';
   scaled: number;
   requested: number;
 }
