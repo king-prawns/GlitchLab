@@ -63,7 +63,8 @@ chaos.disable();
 | Option                | Type           | Default | Description                                                                         |
 | --------------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
 | `timerThrottle`       | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
-| `httpChaos`           | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `httpChaos.fail`      | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `httpChaos.delay`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of adding a random delay to requests                  |
 | `playbackChaos.seek`  | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of random seeks                                       |
 | `playbackChaos.stall` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of emitting `waiting` playback events                 |
 | `seed`                | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
@@ -73,11 +74,11 @@ chaos.disable();
 
 ## 🎞️ Preset chaos profiles
 
-| Level   | timerThrottle | httpChaos | playbackChaos.seek | playbackChaos.stall |
-| ------- | ------------- | --------- | ------------------ | ------------------- |
-| light   | 0.9           | 0.1       | 0.05               | 0.1                 |
-| medium  | 0.6           | 0.3       | 0.15               | 0.2                 |
-| extreme | 0.4           | 0.6       | 0.3                | 0.4                 |
+| Level   | timerThrottle | httpChaos.fail | httpChaos.delay | playbackChaos.seek | playbackChaos.stall |
+| ------- | ------------- | -------------- | --------------- | ------------------ | ------------------- |
+| light   | 0.9           | 0.1            | 0.1             | 0.05               | 0.1                 |
+| medium  | 0.6           | 0.3            | 0.3             | 0.15               | 0.2                 |
+| extreme | 0.4           | 0.6            | 0.6             | 0.3                | 0.4                 |
 
 ---
 
@@ -116,6 +117,7 @@ const chaos = new GlitchLab(ChaosLevel.light);
 const httpChaosListener = (evt: HttpChaosEvent) => {
   // called when an HTTP request is delayed or failed on purpose
   // evt.kind: 'fetch' | 'xhr'
+  // evt.type: 'fail' | 'delay'
   // evt.url: URL of the request
   console.log('[httpChaos]', evt.type, evt.url);
 };
