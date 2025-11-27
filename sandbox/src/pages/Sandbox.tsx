@@ -26,7 +26,11 @@ type IState = {
 class Sandbox extends React.Component<IProps, IState> {
   #glitchLab: GlitchLab | null = null;
 
-  #glitchLabOptions: ChaosOptions | ChaosLevel = {};
+  #glitchLabOptions: ChaosOptions | ChaosLevel = {
+    httpChaos: {
+      delay: 0.3
+    }
+  };
 
   #player: IPlayer | null = null;
 
@@ -57,20 +61,31 @@ class Sandbox extends React.Component<IProps, IState> {
   }
 
   #onHttpChaos = (evt: HttpChaosEvent): void => {
-    const {kind, url} = evt;
-    // eslint-disable-next-line no-console
-    console.log(ChaosEvent.httpChaos, {kind, url});
+    const {kind, type, url} = evt;
+    if (type === 'fail') {
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.httpChaos, {kind, type, url});
+    } else if (type === 'delay') {
+      const {delayMs} = evt;
+
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.httpChaos, {kind, type, url, delayMs});
+    }
   };
 
   #onPlaybackChaos = (evt: PlaybackChaosEvent): void => {
-    const {kind, type, currentTime} = evt;
+    const {kind, type} = evt;
+    if (type === 'seek') {
+      const {targetTime} = evt;
 
-    // eslint-disable-next-line no-console
-    console.log(ChaosEvent.playbackChaos, {
-      kind,
-      type,
-      currentTime
-    });
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.playbackChaos, {kind, type, targetTime});
+    } else if (type === 'waiting') {
+      const {currentTime} = evt;
+
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.playbackChaos, {kind, type, currentTime});
+    }
   };
 
   #onTimerThrottle = (evt: TimerThrottleEvent): void => {

@@ -126,7 +126,7 @@ class Playback extends Patch {
           this.dispatcher.emit(ChaosEvent.playbackChaos, {
             kind: 'HTMLVideoElement',
             type: 'seek',
-            currentTime: targetTime
+            targetTime
           });
 
           el.currentTime = targetTime;

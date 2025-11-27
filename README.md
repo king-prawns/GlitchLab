@@ -119,6 +119,7 @@ const httpChaosListener = (evt: HttpChaosEvent) => {
   // evt.kind: 'fetch' | 'xhr'
   // evt.type: 'fail' | 'delay'
   // evt.url: URL of the request
+  // when evt.type === 'delay': evt.delayMs is the delay in milliseconds
   console.log('[httpChaos]', evt.type, evt.url);
 };
 
@@ -140,7 +141,7 @@ chaos.on(ChaosEvent.playbackChaos, evt => {
   // called when GlitchLab perturbs playback or when the video element changes state
   // evt.kind: 'HTMLVideoElement'
   // evt.type: 'seek' | 'waiting'
-  // when evt.type === 'seek': evt.currentTime is the new playback position
+  // when evt.type === 'seek': evt.targetTime is the new playback position
   // when evt.type === 'waiting': evt.currentTime is the current playback position
   console.log('[playbackChaos]', evt.type, evt);
 });

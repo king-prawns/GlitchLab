@@ -5,6 +5,8 @@ import Seed from '@seed/seed';
 
 import Patch from './patch';
 
+const ORIGINAL_SET_TIMEOUT: typeof window.setTimeout = window.setTimeout.bind(window);
+
 class Network extends Patch {
   #originalFetch: typeof fetch | null = null;
   #originalXHR: typeof XMLHttpRequest | null = null;
@@ -32,11 +34,44 @@ class Network extends Patch {
       this.#originalFetch = window.fetch;
     }
 
-    const original: typeof fetch = this.#originalFetch!;
+    const original: typeof fetch = this.#originalFetch;
+    const httpChaos: Required<HttpChaosOptions> = this.opt.httpChaos;
+    const dispatcher: Dispatcher = this.dispatcher;
+    const seed: Seed = this.seed;
 
     const patched: typeof fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      if (this.seed.random() < this.opt.httpChaos.fail) {
-        this.dispatcher.emit(ChaosEvent.httpChaos, {kind: 'fetch', type: 'fail', url: input.toString()});
+      const url: string = input.toString();
+
+      const shouldDelay: boolean = seed.random() < httpChaos.delay;
+      const shouldFail: boolean = seed.random() < httpChaos.fail;
+
+      if (shouldDelay) {
+        const magnitudeSeconds: number = 1 + seed.random() * 4; // 1..5 seconds
+        const delayMs: number = Math.round(magnitudeSeconds * 1000);
+
+        dispatcher.emit(ChaosEvent.httpChaos, {kind: 'fetch', type: 'delay', url, delayMs});
+
+        return new Promise<Response>(
+          (
+            resolve: (value: Response | PromiseLike<Response>) => void,
+            reject: (reason?: unknown) => void
+          ) => {
+            ORIGINAL_SET_TIMEOUT(() => {
+              if (shouldFail) {
+                dispatcher.emit(ChaosEvent.httpChaos, {kind: 'fetch', type: 'fail', url});
+                reject(new TypeError('GlitchLab: Failed to fetch'));
+
+                return;
+              }
+
+              original.call(window, input, init).then(resolve, reject);
+            }, delayMs);
+          }
+        );
+      }
+
+      if (shouldFail) {
+        dispatcher.emit(ChaosEvent.httpChaos, {kind: 'fetch', type: 'fail', url});
 
         return Promise.reject(new TypeError('GlitchLab: Failed to fetch'));
       }
@@ -74,6 +109,7 @@ class Network extends Patch {
         #on: Partial<Record<OnName, ((ev: Event) => void) | null>> = {};
         #shouldFail = false;
         #failed = false;
+        #url: string | null = null;
 
         constructor() {
           this.#real = new RealXHR();
@@ -100,7 +136,11 @@ class Network extends Patch {
           this.#real.addEventListener('load', (e: Event) => {
             if (this.#shouldFail) {
               this.#failed = true;
-              dispatcher.emit(ChaosEvent.httpChaos, {kind: 'xhr', type: 'fail', url: this.#real.responseURL});
+              dispatcher.emit(ChaosEvent.httpChaos, {
+                kind: 'xhr',
+                type: 'fail',
+                url: this.#real.responseURL || this.#url || ''
+              });
 
               this.#dispatch('error', new ProgressEvent('error'));
 
@@ -152,11 +192,38 @@ class Network extends Patch {
           username?: string | null,
           password?: string | null
         ): void {
+          this.#url = url;
           this.#real.open(method, url, async, username, password);
         }
         send(body?: Document | XMLHttpRequestBodyInit | null): void {
+          const normalizedBody: Document | XMLHttpRequestBodyInit | null = body ?? null;
+
+          const shouldDelay: boolean = seed.random() < httpChaos.delay;
           this.#shouldFail = seed.random() < httpChaos.fail;
-          this.#real.send(body ?? null);
+
+          const scheduleSend = (): void => {
+            this.#real.send(normalizedBody);
+          };
+
+          if (!shouldDelay) {
+            scheduleSend();
+
+            return;
+          }
+
+          const magnitudeSeconds: number = 1 + seed.random() * 4; // 1..5 seconds
+          const delayMs: number = Math.round(magnitudeSeconds * 1000);
+
+          dispatcher.emit(ChaosEvent.httpChaos, {
+            kind: 'xhr',
+            type: 'delay',
+            url: this.#url ?? '',
+            delayMs
+          });
+
+          ORIGINAL_SET_TIMEOUT(() => {
+            scheduleSend();
+          }, delayMs);
         }
         abort(): void {
           this.#real.abort();

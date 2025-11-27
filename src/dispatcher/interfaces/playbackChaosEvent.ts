@@ -1,7 +1,14 @@
-interface PlaybackChaosEvent {
+type PlaybackChaosEvent = {
   kind: 'HTMLVideoElement';
-  type: 'seek' | 'waiting';
-  currentTime: number;
-}
+} & (
+  | {
+      type: 'seek';
+      targetTime: number;
+    }
+  | {
+      type: 'waiting';
+      currentTime: number;
+    }
+);
 
 export default PlaybackChaosEvent;

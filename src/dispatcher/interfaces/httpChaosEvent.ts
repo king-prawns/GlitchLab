@@ -1,7 +1,14 @@
-interface HttpChaosEvent {
+type HttpChaosEvent = {
   kind: 'fetch' | 'xhr';
-  type: 'fail' | 'delay';
   url: string;
-}
+} & (
+  | {
+      type: 'fail';
+    }
+  | {
+      type: 'delay';
+      delayMs: number;
+    }
+);
 
 export default HttpChaosEvent;
