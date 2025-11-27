@@ -42,7 +42,7 @@ const chaos: GlitchLab = new GlitchLab({
   httpChaos: 0.3, // 30% chance to fail requests
   playbackChaos: {
     seek: 0.15, // 15% chance to seek playback
-    stall: 0.25 // 12% chance to emit 'waiting' event
+    stall: 0.25 // 25% chance to emit 'waiting' event
   }
 });
 
@@ -63,7 +63,8 @@ chaos.disable();
 | Option                | Type           | Default | Description                                                                         |
 | --------------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
 | `timerThrottle`       | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
-| `httpChaos`           | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `httpChaos.fail`      | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `httpChaos.delay`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of adding a random delay to requests                  |
 | `playbackChaos.seek`  | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of random seeks                                       |
 | `playbackChaos.stall` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of emitting `waiting` playback events                 |
 | `seed`                | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
@@ -73,11 +74,11 @@ chaos.disable();
 
 ## 🎞️ Preset chaos profiles
 
-| Level   | timerThrottle | httpChaos | playbackChaos.seek | playbackChaos.stall |
-| ------- | ------------- | --------- | ------------------ | ------------------- |
-| light   | 0.9           | 0.1       | 0.05               | 0.1                 |
-| medium  | 0.6           | 0.3       | 0.15               | 0.2                 |
-| extreme | 0.4           | 0.6       | 0.3                | 0.4                 |
+| Level   | timerThrottle | httpChaos.fail | httpChaos.delay | playbackChaos.seek | playbackChaos.stall |
+| ------- | ------------- | -------------- | --------------- | ------------------ | ------------------- |
+| light   | 0.9           | 0.1            | 0.1             | 0.05               | 0.1                 |
+| medium  | 0.6           | 0.3            | 0.3             | 0.15               | 0.2                 |
+| extreme | 0.4           | 0.6            | 0.6             | 0.3                | 0.4                 |
 
 ---
 
@@ -115,8 +116,10 @@ const chaos = new GlitchLab(ChaosLevel.light);
 
 const httpChaosListener = (evt: HttpChaosEvent) => {
   // called when an HTTP request is delayed or failed on purpose
-  // evt.type: 'fetch' | 'xhr'
+  // evt.kind: 'fetch' | 'xhr'
+  // evt.type: 'fail' | 'delay'
   // evt.url: URL of the request
+  // when evt.type === 'delay': evt.delayMs is the delay in milliseconds
   console.log('[httpChaos]', evt.type, evt.url);
 };
 
@@ -129,19 +132,29 @@ chaos.off(ChaosEvent.httpChaos, httpChaosListener);
 ```typescript
 chaos.on(ChaosEvent.timerThrottle, evt => {
   // called whenever a timer is slowed down
-  // evt.type: 'setTimeout' | 'setInterval' | 'requestAnimationFrame'
+  // evt.kind: 'setTimeout' | 'setInterval' | 'requestAnimationFrame'
   // evt.requested: original delay, evt.scaled: effective delay
   console.log('[timerThrottle]', evt.type, evt.requested, evt.scaled);
 });
 
 chaos.on(ChaosEvent.playbackChaos, evt => {
   // called when GlitchLab perturbs playback or when the video element changes state
+  // evt.kind: 'HTMLVideoElement'
   // evt.type: 'seek' | 'waiting'
   // when evt.type === 'seek': evt.targetTime is the new playback position
-  // when evt.type === 'waiting': evt.currentTime is set
+  // when evt.type === 'waiting': evt.currentTime is the current playback position
   console.log('[playbackChaos]', evt.type, evt);
 });
 ```
+
+---
+
+## ⚠️ Known limitations
+
+Some third‑party players capture browser APIs **before** GlitchLab is enabled (for example by saving `window.fetch`, `XMLHttpRequest` or `setTimeout` in local variables at module load time).
+In those cases, monkey‑patching the corresponding global later (through GlitchLab) may **not** affect those libraries, because they keep using the cached reference.
+
+For deeper integration with specific players or libraries, you may need to use their own extension points (networking plugins, timer hooks, etc.) and route their calls through the already‑patched browser APIs.
 
 ---
 

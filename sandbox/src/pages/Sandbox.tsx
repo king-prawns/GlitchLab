@@ -57,33 +57,37 @@ class Sandbox extends React.Component<IProps, IState> {
   }
 
   #onHttpChaos = (evt: HttpChaosEvent): void => {
-    const {url} = evt;
-    // eslint-disable-next-line no-console
-    console.log(ChaosEvent.httpChaos, {url});
+    const {kind, type, url} = evt;
+    if (type === 'fail') {
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.httpChaos, {kind, type, url});
+    } else if (type === 'delay') {
+      const {delayMs} = evt;
+
+      // eslint-disable-next-line no-console
+      console.log(ChaosEvent.httpChaos, {kind, type, url, delayMs});
+    }
   };
 
   #onPlaybackChaos = (evt: PlaybackChaosEvent): void => {
-    const {type} = evt;
+    const {kind, type} = evt;
     if (type === 'seek') {
       const {targetTime} = evt;
 
       // eslint-disable-next-line no-console
-      console.log(ChaosEvent.playbackChaos, {type, targetTime});
-    } else {
+      console.log(ChaosEvent.playbackChaos, {kind, type, targetTime});
+    } else if (type === 'waiting') {
       const {currentTime} = evt;
 
       // eslint-disable-next-line no-console
-      console.log(ChaosEvent.playbackChaos, {
-        type,
-        currentTime
-      });
+      console.log(ChaosEvent.playbackChaos, {kind, type, currentTime});
     }
   };
 
   #onTimerThrottle = (evt: TimerThrottleEvent): void => {
-    const {type, scaled, requested} = evt;
+    const {kind, scaled, requested} = evt;
     // eslint-disable-next-line no-console
-    console.log(ChaosEvent.timerThrottle, {type, scaled, requested});
+    console.log(ChaosEvent.timerThrottle, {kind, scaled, requested});
   };
 
   #onCreate = (): void => {

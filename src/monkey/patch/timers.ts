@@ -49,7 +49,7 @@ class Timers extends Patch {
         return original.call(
           window,
           () => {
-            this.dispatcher.emit(ChaosEvent.timerThrottle, {type: 'setTimeout', scaled, requested});
+            this.dispatcher.emit(ChaosEvent.timerThrottle, {kind: 'setTimeout', scaled, requested});
 
             (handler as (...a: unknown[]) => void).apply(window, args);
           },
@@ -84,7 +84,7 @@ class Timers extends Patch {
         return original.call(
           window,
           () => {
-            this.dispatcher.emit(ChaosEvent.timerThrottle, {type: 'setInterval', scaled, requested});
+            this.dispatcher.emit(ChaosEvent.timerThrottle, {kind: 'setInterval', scaled, requested});
 
             (handler as (...a: unknown[]) => void).apply(window, args);
           },
@@ -116,7 +116,7 @@ class Timers extends Patch {
         const virtualTs: number = this.#originalRafAnchor + (realTs - this.#originalRafAnchor) * t;
 
         this.dispatcher.emit(ChaosEvent.timerThrottle, {
-          type: 'requestAnimationFrame',
+          kind: 'requestAnimationFrame',
           scaled: virtualTs,
           requested: realTs
         });

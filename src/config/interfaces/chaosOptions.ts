@@ -1,8 +1,9 @@
-import PlaybackChaosOptions from './PlaybackChaosOptions';
+import HttpChaosOptions from './httpChaosOptions';
+import PlaybackChaosOptions from './playbackChaosOptions';
 
 interface ChaosOptions {
   timerThrottle?: number;
-  httpChaos?: number;
+  httpChaos?: HttpChaosOptions;
   playbackChaos?: PlaybackChaosOptions;
   seed?: number | null;
   quiet?: boolean;

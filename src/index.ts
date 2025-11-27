@@ -1,6 +1,7 @@
 export {default as GlitchLab} from './GlitchLab';
 export type {default as ChaosOptions} from '@config/interfaces/chaosOptions';
-export type {default as PlaybackChaosOptions} from '@config/interfaces/PlaybackChaosOptions';
+export type {default as PlaybackChaosOptions} from '@config/interfaces/playbackChaosOptions';
+export type {default as HttpChaosOptions} from '@config/interfaces/httpChaosOptions';
 export {default as ChaosLevel} from '@config/enum/chaosLevel';
 export type {default as HttpChaosEvent} from '@dispatcher/interfaces/httpChaosEvent';
 export type {default as TimerThrottleEvent} from '@dispatcher/interfaces/timerThrottleEvent';

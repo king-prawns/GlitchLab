@@ -111,6 +111,7 @@ class Playback extends Patch {
         el.dispatchEvent(waitingEvent);
 
         this.dispatcher.emit(ChaosEvent.playbackChaos, {
+          kind: 'HTMLVideoElement',
           type: 'waiting',
           currentTime: el.currentTime
         });
@@ -122,7 +123,11 @@ class Playback extends Patch {
         const magnitude: number = 1 + this.seed.random() * 4; // 1..5 seconds
         const targetTime: number = Math.max(0, el.currentTime + direction * magnitude);
         try {
-          this.dispatcher.emit(ChaosEvent.playbackChaos, {type: 'seek', targetTime});
+          this.dispatcher.emit(ChaosEvent.playbackChaos, {
+            kind: 'HTMLVideoElement',
+            type: 'seek',
+            targetTime
+          });
 
           el.currentTime = targetTime;
         } catch {

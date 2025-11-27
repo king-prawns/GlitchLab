@@ -1,4 +1,6 @@
-type PlaybackChaosEvent =
+type PlaybackChaosEvent = {
+  kind: 'HTMLVideoElement';
+} & (
   | {
       type: 'seek';
       targetTime: number;
@@ -6,6 +8,7 @@ type PlaybackChaosEvent =
   | {
       type: 'waiting';
       currentTime: number;
-    };
+    }
+);
 
 export default PlaybackChaosEvent;
