@@ -26,11 +26,7 @@ type IState = {
 class Sandbox extends React.Component<IProps, IState> {
   #glitchLab: GlitchLab | null = null;
 
-  #glitchLabOptions: ChaosOptions | ChaosLevel = {
-    httpChaos: {
-      delay: 0.3
-    }
-  };
+  #glitchLabOptions: ChaosOptions | ChaosLevel = {};
 
   #player: IPlayer | null = null;
 
