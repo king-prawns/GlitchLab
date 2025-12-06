@@ -172,7 +172,7 @@ chaos.on(ChaosEvent.timerChaos, evt => {
 
 ## ⚠️ Known limitations
 
-Some third‑party players capture browser APIs **before** GlitchLab is enabled (for example by saving `window.fetch`, `XMLHttpRequest` or `setTimeout` in local variables at module load time).
+Some third‑party players capture browser APIs **before** GlitchLab is enabled (for example by saving `fetch`, `XMLHttpRequest`, `MediaSource`, or `setTimeout` in local variables at module load time).
 In those cases, monkey‑patching the corresponding global later (through GlitchLab) may **not** affect those libraries, because they keep using the cached reference.
 
 For deeper integration with specific players or libraries, you may need to use their own extension points (networking plugins, timer hooks, etc.) and route their calls through the already‑patched browser APIs.
