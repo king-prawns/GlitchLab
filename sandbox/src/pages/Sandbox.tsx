@@ -71,9 +71,9 @@ class Sandbox extends React.Component<IProps, IState> {
   };
 
   #onMseChaos = (evt: MseChaosEvent): void => {
-    const {kind, type, currentTime} = evt;
+    const {kind, type, data} = evt;
     // eslint-disable-next-line no-console
-    console.log(ChaosEvent.mseChaos, {kind, type, currentTime});
+    console.log(ChaosEvent.mseChaos, {kind, type, data});
   };
 
   #onPlaybackChaos = (evt: PlaybackChaosEvent): void => {

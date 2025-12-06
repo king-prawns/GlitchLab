@@ -1,7 +1,7 @@
 type MseChaosEvent = {
   kind: 'SourceBuffer';
   type: 'decode';
-  currentTime: number;
+  data: BufferSource;
 };
 
 export default MseChaosEvent;

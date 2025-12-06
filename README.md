@@ -145,7 +145,7 @@ chaos.on(ChaosEvent.mseChaos, evt => {
   // called when a media decode is failed on purpose
   // evt.kind: 'SourceBuffer'
   // evt.type: 'decode'
-  // evt.currentTime: current playback position
+  // evt.data: the original BufferSource data
   console.log('[mseChaos]', evt.type, evt.currentTime);
 });
 
