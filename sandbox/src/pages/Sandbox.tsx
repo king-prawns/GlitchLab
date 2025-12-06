@@ -1,8 +1,16 @@
 import './Sandbox.css';
-import PlaybackChaosEvent from '@dispatcher/interfaces/playbackChaosEvent';
 import React, {JSX} from 'react';
 
-import {ChaosEvent, ChaosLevel, ChaosOptions, GlitchLab, HttpChaosEvent, TimerChaosEvent} from '../../../src';
+import {
+  ChaosEvent,
+  ChaosLevel,
+  ChaosOptions,
+  GlitchLab,
+  HttpChaosEvent,
+  MseChaosEvent,
+  PlaybackChaosEvent,
+  TimerChaosEvent
+} from '../../../src';
 import type IPlayer from '../interfaces/Player';
 import Player from '../players/Tape';
 // import Player from '../players/Shaka';
@@ -62,6 +70,12 @@ class Sandbox extends React.Component<IProps, IState> {
     }
   };
 
+  #onMseChaos = (evt: MseChaosEvent): void => {
+    const {kind, type, data} = evt;
+    // eslint-disable-next-line no-console
+    console.log(ChaosEvent.mseChaos, {kind, type, data});
+  };
+
   #onPlaybackChaos = (evt: PlaybackChaosEvent): void => {
     const {kind, type} = evt;
     if (type === 'seek') {
@@ -99,6 +113,7 @@ class Sandbox extends React.Component<IProps, IState> {
     this.#glitchLab?.enable();
 
     this.#glitchLab?.on(ChaosEvent.httpChaos, this.#onHttpChaos);
+    this.#glitchLab?.on(ChaosEvent.mseChaos, this.#onMseChaos);
     this.#glitchLab?.on(ChaosEvent.playbackChaos, this.#onPlaybackChaos);
     this.#glitchLab?.on(ChaosEvent.timerChaos, this.#onTimerChaos);
 
@@ -112,6 +127,7 @@ class Sandbox extends React.Component<IProps, IState> {
     this.#glitchLab?.disable();
 
     this.#glitchLab?.off(ChaosEvent.httpChaos, this.#onHttpChaos);
+    this.#glitchLab?.off(ChaosEvent.mseChaos, this.#onMseChaos);
     this.#glitchLab?.off(ChaosEvent.playbackChaos, this.#onPlaybackChaos);
     this.#glitchLab?.off(ChaosEvent.timerChaos, this.#onTimerChaos);
 

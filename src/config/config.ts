@@ -1,25 +1,29 @@
 import ChaosLevel from './enum/chaosLevel';
 import ChaosOptions from './interfaces/chaosOptions';
 import HttpChaosOptions from './interfaces/httpChaosOptions';
+import MseChaosOptions from './interfaces/mseChaosOptions';
 import PlaybackChaosOptions from './interfaces/playbackChaosOptions';
 import TimerChaosOptions from './interfaces/timerChaosOptions';
 
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
     [ChaosLevel.light]: {
-      timer: {throttle: 0.9},
       http: {fail: 0.1, delay: 0.1},
-      playback: {seek: 0.05, stall: 0.1}
+      mse: {decode: 0.025},
+      playback: {seek: 0.05, stall: 0.1},
+      timer: {throttle: 0.9}
     },
     [ChaosLevel.medium]: {
-      timer: {throttle: 0.6},
       http: {fail: 0.3, delay: 0.3},
-      playback: {seek: 0.15, stall: 0.2}
+      mse: {decode: 0.05},
+      playback: {seek: 0.15, stall: 0.2},
+      timer: {throttle: 0.6}
     },
     [ChaosLevel.extreme]: {
-      timer: {throttle: 0.4},
       http: {fail: 0.6, delay: 0.6},
-      playback: {seek: 0.3, stall: 0.4}
+      mse: {decode: 0.1},
+      playback: {seek: 0.3, stall: 0.4},
+      timer: {throttle: 0.4}
     }
   };
 
@@ -27,6 +31,7 @@ class Config {
     timer: {throttle: 1.0},
     http: {fail: 0, delay: 0},
     playback: {seek: 0, stall: 0},
+    mse: {decode: 0},
     seed: null,
     quiet: false
   };
@@ -62,22 +67,6 @@ class Config {
   #sanitizeOpt(opt: Partial<ChaosOptions>): Partial<ChaosOptions> {
     const sanitizedOpt: Partial<ChaosOptions> = {};
 
-    if (opt.timer !== undefined) {
-      const sanitizedTimerChaos: Partial<TimerChaosOptions> = {};
-
-      if (opt.timer.throttle !== undefined) {
-        if (opt.timer.throttle <= 0 || opt.timer.throttle > 1) {
-          throw new Error('"timer.throttle" must be greater than 0 and less than or equal to 1');
-        }
-
-        sanitizedTimerChaos.throttle = opt.timer.throttle;
-      }
-
-      if (Object.keys(sanitizedTimerChaos).length > 0) {
-        sanitizedOpt.timer = sanitizedTimerChaos;
-      }
-    }
-
     if (opt.http !== undefined) {
       const sanitizedHttpChaos: Partial<HttpChaosOptions> = {};
 
@@ -102,6 +91,22 @@ class Config {
       }
     }
 
+    if (opt.mse !== undefined) {
+      const sanitizedMseChaos: Partial<MseChaosOptions> = {};
+
+      if (opt.mse.decode !== undefined) {
+        if (opt.mse.decode < 0 || opt.mse.decode > 1) {
+          throw new Error('"mseChaos.decode" must be between 0 and 1');
+        }
+
+        sanitizedMseChaos.decode = opt.mse.decode;
+      }
+
+      if (Object.keys(sanitizedMseChaos).length > 0) {
+        sanitizedOpt.mse = sanitizedMseChaos;
+      }
+    }
+
     if (opt.playback !== undefined) {
       const sanitizedPlaybackChaos: Partial<PlaybackChaosOptions> = {};
 
@@ -123,6 +128,22 @@ class Config {
 
       if (Object.keys(sanitizedPlaybackChaos).length > 0) {
         sanitizedOpt.playback = sanitizedPlaybackChaos;
+      }
+    }
+
+    if (opt.timer !== undefined) {
+      const sanitizedTimerChaos: Partial<TimerChaosOptions> = {};
+
+      if (opt.timer.throttle !== undefined) {
+        if (opt.timer.throttle <= 0 || opt.timer.throttle > 1) {
+          throw new Error('"timer.throttle" must be greater than 0 and less than or equal to 1');
+        }
+
+        sanitizedTimerChaos.throttle = opt.timer.throttle;
+      }
+
+      if (Object.keys(sanitizedTimerChaos).length > 0) {
+        sanitizedOpt.timer = sanitizedTimerChaos;
       }
     }
 
