@@ -2,14 +2,7 @@ import './Sandbox.css';
 import PlaybackChaosEvent from '@dispatcher/interfaces/playbackChaosEvent';
 import React, {JSX} from 'react';
 
-import {
-  ChaosEvent,
-  ChaosLevel,
-  ChaosOptions,
-  GlitchLab,
-  HttpChaosEvent,
-  TimerThrottleEvent
-} from '../../../src';
+import {ChaosEvent, ChaosLevel, ChaosOptions, GlitchLab, HttpChaosEvent, TimerChaosEvent} from '../../../src';
 import type IPlayer from '../interfaces/Player';
 import Player from '../players/Tape';
 // import Player from '../players/Shaka';
@@ -84,10 +77,10 @@ class Sandbox extends React.Component<IProps, IState> {
     }
   };
 
-  #onTimerThrottle = (evt: TimerThrottleEvent): void => {
-    const {kind, scaled, requested} = evt;
+  #onTimerChaos = (evt: TimerChaosEvent): void => {
+    const {kind, type, scaled, requested} = evt;
     // eslint-disable-next-line no-console
-    console.log(ChaosEvent.timerThrottle, {kind, scaled, requested});
+    console.log(ChaosEvent.timerChaos, {kind, type, scaled, requested});
   };
 
   #onCreate = (): void => {
@@ -106,8 +99,8 @@ class Sandbox extends React.Component<IProps, IState> {
     this.#glitchLab?.enable();
 
     this.#glitchLab?.on(ChaosEvent.httpChaos, this.#onHttpChaos);
-    this.#glitchLab?.on(ChaosEvent.timerThrottle, this.#onTimerThrottle);
     this.#glitchLab?.on(ChaosEvent.playbackChaos, this.#onPlaybackChaos);
+    this.#glitchLab?.on(ChaosEvent.timerChaos, this.#onTimerChaos);
 
     const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
     this.#player?.load(MANIFEST_URL);
@@ -119,8 +112,8 @@ class Sandbox extends React.Component<IProps, IState> {
     this.#glitchLab?.disable();
 
     this.#glitchLab?.off(ChaosEvent.httpChaos, this.#onHttpChaos);
-    this.#glitchLab?.off(ChaosEvent.timerThrottle, this.#onTimerThrottle);
     this.#glitchLab?.off(ChaosEvent.playbackChaos, this.#onPlaybackChaos);
+    this.#glitchLab?.off(ChaosEvent.timerChaos, this.#onTimerChaos);
 
     this.#player?.stop();
     this.#player = null;

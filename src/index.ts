@@ -4,7 +4,7 @@ export type {default as PlaybackChaosOptions} from '@config/interfaces/playbackC
 export type {default as HttpChaosOptions} from '@config/interfaces/httpChaosOptions';
 export {default as ChaosLevel} from '@config/enum/chaosLevel';
 export type {default as HttpChaosEvent} from '@dispatcher/interfaces/httpChaosEvent';
-export type {default as TimerThrottleEvent} from '@dispatcher/interfaces/timerThrottleEvent';
+export type {default as TimerChaosEvent} from '@dispatcher/interfaces/timerChaosEvent';
 export type {default as PlaybackChaosEvent} from '@dispatcher/interfaces/playbackChaosEvent';
 export type {default as ChaosEvents} from '@dispatcher/interfaces/chaosEvents';
 export {default as ChaosEvent} from '@dispatcher/enum/chaosEvent';

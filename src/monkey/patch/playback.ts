@@ -11,7 +11,7 @@ class Playback extends Patch {
   #onTickMap: Map<HTMLVideoElement, EventListener> = new Map();
 
   patch(): void {
-    if (this.opt.playbackChaos.seek === 0 && this.opt.playbackChaos.stall === 0) return;
+    if (this.opt.playback.seek === 0 && this.opt.playback.stall === 0) return;
 
     this.console.info('Patching playback');
 
@@ -25,7 +25,7 @@ class Playback extends Patch {
   }
 
   restore(): void {
-    if (this.opt.playbackChaos.seek === 0 && this.opt.playbackChaos.stall === 0) return;
+    if (this.opt.playback.seek === 0 && this.opt.playback.stall === 0) return;
 
     this.console.info('Restoring playback');
 
@@ -105,7 +105,7 @@ class Playback extends Patch {
         return;
       }
 
-      const shouldStall: boolean = this.seed.random() < this.opt.playbackChaos.stall;
+      const shouldStall: boolean = this.seed.random() < this.opt.playback.stall;
       if (shouldStall) {
         const waitingEvent: Event = new Event('waiting');
         el.dispatchEvent(waitingEvent);
@@ -117,7 +117,7 @@ class Playback extends Patch {
         });
       }
 
-      const shouldSeek: boolean = this.seed.random() < this.opt.playbackChaos.seek;
+      const shouldSeek: boolean = this.seed.random() < this.opt.playback.seek;
       if (shouldSeek) {
         const direction: number = this.seed.random() < 0.5 ? -1 : 1;
         const magnitude: number = 1 + this.seed.random() * 4; // 1..5 seconds
