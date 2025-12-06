@@ -1,7 +1,8 @@
-interface TimerThrottleEvent {
+type TimerChaosEvent = {
   kind: 'setTimeout' | 'setInterval' | 'requestAnimationFrame';
+  type: 'throttle';
   scaled: number;
   requested: number;
-}
+};
 
-export default TimerThrottleEvent;
+export default TimerChaosEvent;

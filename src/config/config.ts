@@ -2,30 +2,31 @@ import ChaosLevel from './enum/chaosLevel';
 import ChaosOptions from './interfaces/chaosOptions';
 import HttpChaosOptions from './interfaces/httpChaosOptions';
 import PlaybackChaosOptions from './interfaces/playbackChaosOptions';
+import TimerChaosOptions from './interfaces/timerChaosOptions';
 
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
     [ChaosLevel.light]: {
-      timerThrottle: 0.9,
-      httpChaos: {fail: 0.1, delay: 0.1},
-      playbackChaos: {seek: 0.05, stall: 0.1}
+      timer: {throttle: 0.9},
+      http: {fail: 0.1, delay: 0.1},
+      playback: {seek: 0.05, stall: 0.1}
     },
     [ChaosLevel.medium]: {
-      timerThrottle: 0.6,
-      httpChaos: {fail: 0.3, delay: 0.3},
-      playbackChaos: {seek: 0.15, stall: 0.2}
+      timer: {throttle: 0.6},
+      http: {fail: 0.3, delay: 0.3},
+      playback: {seek: 0.15, stall: 0.2}
     },
     [ChaosLevel.extreme]: {
-      timerThrottle: 0.4,
-      httpChaos: {fail: 0.6, delay: 0.6},
-      playbackChaos: {seek: 0.3, stall: 0.4}
+      timer: {throttle: 0.4},
+      http: {fail: 0.6, delay: 0.6},
+      playback: {seek: 0.3, stall: 0.4}
     }
   };
 
   #options: DeepRequired<ChaosOptions> = {
-    timerThrottle: 1.0,
-    httpChaos: {fail: 0, delay: 0},
-    playbackChaos: {seek: 0, stall: 0},
+    timer: {throttle: 1.0},
+    http: {fail: 0, delay: 0},
+    playback: {seek: 0, stall: 0},
     seed: null,
     quiet: false
   };
@@ -61,58 +62,67 @@ class Config {
   #sanitizeOpt(opt: Partial<ChaosOptions>): Partial<ChaosOptions> {
     const sanitizedOpt: Partial<ChaosOptions> = {};
 
-    if (opt.timerThrottle !== undefined) {
-      if (opt.timerThrottle <= 0 || opt.timerThrottle > 1) {
-        throw new Error('"timerThrottle" must be greater than 0 and less than or equal to 1');
+    if (opt.timer !== undefined) {
+      const sanitizedTimerChaos: Partial<TimerChaosOptions> = {};
+
+      if (opt.timer.throttle !== undefined) {
+        if (opt.timer.throttle <= 0 || opt.timer.throttle > 1) {
+          throw new Error('"timer.throttle" must be greater than 0 and less than or equal to 1');
+        }
+
+        sanitizedTimerChaos.throttle = opt.timer.throttle;
       }
-      sanitizedOpt.timerThrottle = opt.timerThrottle;
+
+      if (Object.keys(sanitizedTimerChaos).length > 0) {
+        sanitizedOpt.timer = sanitizedTimerChaos;
+      }
     }
 
-    if (opt.httpChaos !== undefined) {
+    if (opt.http !== undefined) {
       const sanitizedHttpChaos: Partial<HttpChaosOptions> = {};
 
-      if (opt.httpChaos.fail !== undefined) {
-        if (opt.httpChaos.fail < 0 || opt.httpChaos.fail > 1) {
+      if (opt.http.fail !== undefined) {
+        if (opt.http.fail < 0 || opt.http.fail > 1) {
           throw new Error('"httpChaos.fail" must be between 0 and 1');
         }
 
-        sanitizedHttpChaos.fail = opt.httpChaos.fail;
+        sanitizedHttpChaos.fail = opt.http.fail;
       }
 
-      if (opt.httpChaos.delay !== undefined) {
-        if (opt.httpChaos.delay < 0 || opt.httpChaos.delay > 1) {
+      if (opt.http.delay !== undefined) {
+        if (opt.http.delay < 0 || opt.http.delay > 1) {
           throw new Error('"httpChaos.delay" must be between 0 and 1');
         }
 
-        sanitizedHttpChaos.delay = opt.httpChaos.delay;
+        sanitizedHttpChaos.delay = opt.http.delay;
       }
 
       if (Object.keys(sanitizedHttpChaos).length > 0) {
-        sanitizedOpt.httpChaos = sanitizedHttpChaos;
+        sanitizedOpt.http = sanitizedHttpChaos;
       }
     }
 
-    if (opt.playbackChaos !== undefined) {
+    if (opt.playback !== undefined) {
       const sanitizedPlaybackChaos: Partial<PlaybackChaosOptions> = {};
 
-      if (opt.playbackChaos.seek !== undefined) {
-        if (opt.playbackChaos.seek < 0 || opt.playbackChaos.seek > 1) {
+      if (opt.playback.seek !== undefined) {
+        if (opt.playback.seek < 0 || opt.playback.seek > 1) {
           throw new Error('"playbackChaos.seek" must be between 0 and 1');
         }
 
-        sanitizedPlaybackChaos.seek = opt.playbackChaos.seek;
+        sanitizedPlaybackChaos.seek = opt.playback.seek;
       }
 
-      if (opt.playbackChaos.stall !== undefined) {
-        if (opt.playbackChaos.stall < 0 || opt.playbackChaos.stall > 1) {
+      if (opt.playback.stall !== undefined) {
+        if (opt.playback.stall < 0 || opt.playback.stall > 1) {
           throw new Error('"playbackChaos.stall" must be between 0 and 1');
         }
 
-        sanitizedPlaybackChaos.stall = opt.playbackChaos.stall;
+        sanitizedPlaybackChaos.stall = opt.playback.stall;
       }
 
       if (Object.keys(sanitizedPlaybackChaos).length > 0) {
-        sanitizedOpt.playbackChaos = sanitizedPlaybackChaos;
+        sanitizedOpt.playback = sanitizedPlaybackChaos;
       }
     }
 

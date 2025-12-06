@@ -38,9 +38,14 @@ yarn add glitchlab
 import {GlitchLab} from 'glitchlab';
 
 const chaos: GlitchLab = new GlitchLab({
-  timerThrottle: 0.6, // 60% of normal speed
-  httpChaos: 0.3, // 30% chance to fail requests
-  playbackChaos: {
+  timer: {
+    throttle: 0.6 // 60% of normal speed
+  },
+  http: {
+    fail: 0.3, // 30% chance to fail requests
+    delay: 0.6 // 60% chance to delay requests
+  },
+  playback: {
     seek: 0.15, // 15% chance to seek playback
     stall: 0.25 // 25% chance to emit 'waiting' event
   }
@@ -60,25 +65,25 @@ chaos.disable();
 
 ## ⚙️ Configuration
 
-| Option                | Type           | Default | Description                                                                         |
-| --------------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
-| `timerThrottle`       | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
-| `httpChaos.fail`      | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
-| `httpChaos.delay`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of adding a random delay to requests                  |
-| `playbackChaos.seek`  | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of random seeks                                       |
-| `playbackChaos.stall` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of emitting `waiting` playback events                 |
-| `seed`                | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
-| `quiet`               | `boolean`      | `false` | Disable logging                                                                     |
+| Option           | Type           | Default | Description                                                                         |
+| ---------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
+| `timer.throttle` | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
+| `http.fail`      | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
+| `http.delay`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of adding a random delay to requests                  |
+| `playback.seek`  | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of random seeks                                       |
+| `playback.stall` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of emitting `waiting` playback events                 |
+| `seed`           | `number\|null` | `null`  | If set, use seeded deterministic randomness; if null/omitted, use native randomness |
+| `quiet`          | `boolean`      | `false` | Disable logging                                                                     |
 
 ---
 
 ## 🎞️ Preset chaos profiles
 
-| Level   | timerThrottle | httpChaos.fail | httpChaos.delay | playbackChaos.seek | playbackChaos.stall |
-| ------- | ------------- | -------------- | --------------- | ------------------ | ------------------- |
-| light   | 0.9           | 0.1            | 0.1             | 0.05               | 0.1                 |
-| medium  | 0.6           | 0.3            | 0.3             | 0.15               | 0.2                 |
-| extreme | 0.4           | 0.6            | 0.6             | 0.3                | 0.4                 |
+| Level   | timer.throttle | http.fail | http.delay | playback.seek | playback.stall |
+| ------- | -------------- | --------- | ---------- | ------------- | -------------- |
+| light   | 0.9            | 0.1       | 0.1        | 0.05          | 0.1            |
+| medium  | 0.6            | 0.3       | 0.3        | 0.15          | 0.2            |
+| extreme | 0.4            | 0.6       | 0.6        | 0.3           | 0.4            |
 
 ---
 
@@ -105,7 +110,7 @@ GlitchLab exposes two methods:
 
 Available events:
 
-- `'timerThrottle'`
+- `'timerChaos'`
 - `'httpChaos'`
 - `'playbackChaos'`
 
@@ -130,15 +135,17 @@ chaos.off(ChaosEvent.httpChaos, httpChaosListener);
 ```
 
 ```typescript
-chaos.on(ChaosEvent.timerThrottle, evt => {
+chaos.on(ChaosEvent.timerChaos, evt => {
   // called whenever a timer is slowed down
   // evt.kind: 'setTimeout' | 'setInterval' | 'requestAnimationFrame'
-  // evt.requested: original delay, evt.scaled: effective delay
-  console.log('[timerThrottle]', evt.type, evt.requested, evt.scaled);
+  // evt.type: 'throttle'
+  // evt.requested: original delay
+  // evt.scaled: effective delay
+  console.log('[timerChaos]', evt.type, evt.requested, evt.scaled);
 });
 
 chaos.on(ChaosEvent.playbackChaos, evt => {
-  // called when GlitchLab perturbs playback or when the video element changes state
+  // called when playback is perturbed
   // evt.kind: 'HTMLVideoElement'
   // evt.type: 'seek' | 'waiting'
   // when evt.type === 'seek': evt.targetTime is the new playback position

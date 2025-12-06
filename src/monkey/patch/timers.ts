@@ -9,7 +9,7 @@ class Timers extends Patch {
   #originalRafAnchor: number | null = null;
 
   patch(): void {
-    if (this.opt.timerThrottle === 1.0) return;
+    if (this.opt.timer.throttle === 1.0) return;
 
     this.console.info('Patching timers');
 
@@ -19,7 +19,7 @@ class Timers extends Patch {
   }
 
   restore(): void {
-    if (this.opt.timerThrottle === 1.0) return;
+    if (this.opt.timer.throttle === 1.0) return;
 
     this.console.info('Restoring timers');
 
@@ -41,7 +41,7 @@ class Timers extends Patch {
       timeout?: number,
       ...args: Array<unknown>
     ): number => {
-      const t: number = this.opt.timerThrottle;
+      const t: number = this.opt.timer.throttle;
       const requested: number = typeof timeout === 'number' && isFinite(timeout) ? timeout : 0;
       const scaled: number = Math.round(requested / t);
 
@@ -49,7 +49,12 @@ class Timers extends Patch {
         return original.call(
           window,
           () => {
-            this.dispatcher.emit(ChaosEvent.timerThrottle, {kind: 'setTimeout', scaled, requested});
+            this.dispatcher.emit(ChaosEvent.timerChaos, {
+              kind: 'setTimeout',
+              type: 'throttle',
+              scaled,
+              requested
+            });
 
             (handler as (...a: unknown[]) => void).apply(window, args);
           },
@@ -76,7 +81,7 @@ class Timers extends Patch {
       timeout?: number,
       ...args: Array<unknown>
     ): number => {
-      const t: number = this.opt.timerThrottle;
+      const t: number = this.opt.timer.throttle;
       const requested: number = typeof timeout === 'number' && isFinite(timeout) ? timeout : 0;
       const scaled: number = Math.round(requested / t);
 
@@ -84,7 +89,12 @@ class Timers extends Patch {
         return original.call(
           window,
           () => {
-            this.dispatcher.emit(ChaosEvent.timerThrottle, {kind: 'setInterval', scaled, requested});
+            this.dispatcher.emit(ChaosEvent.timerChaos, {
+              kind: 'setInterval',
+              type: 'throttle',
+              scaled,
+              requested
+            });
 
             (handler as (...a: unknown[]) => void).apply(window, args);
           },
@@ -106,7 +116,7 @@ class Timers extends Patch {
     const original: typeof requestAnimationFrame = this.#originalRequestAnimationFrame!;
 
     const patched: typeof requestAnimationFrame = ((callback: FrameRequestCallback): number => {
-      const t: number = this.opt.timerThrottle;
+      const t: number = this.opt.timer.throttle;
 
       return original.call(window, (realTs: DOMHighResTimeStamp) => {
         if (this.#originalRafAnchor === null) {
@@ -115,8 +125,9 @@ class Timers extends Patch {
 
         const virtualTs: number = this.#originalRafAnchor + (realTs - this.#originalRafAnchor) * t;
 
-        this.dispatcher.emit(ChaosEvent.timerThrottle, {
+        this.dispatcher.emit(ChaosEvent.timerChaos, {
           kind: 'requestAnimationFrame',
+          type: 'throttle',
           scaled: virtualTs,
           requested: realTs
         });

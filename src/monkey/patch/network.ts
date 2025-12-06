@@ -12,7 +12,7 @@ class Network extends Patch {
   #originalXHR: typeof XMLHttpRequest | null = null;
 
   patch(): void {
-    if (this.opt.httpChaos.fail === 0 && this.opt.httpChaos.delay === 0) return;
+    if (this.opt.http.fail === 0 && this.opt.http.delay === 0) return;
 
     this.console.info('Patching network');
 
@@ -21,7 +21,7 @@ class Network extends Patch {
   }
 
   restore(): void {
-    if (this.opt.httpChaos.fail === 0 && this.opt.httpChaos.delay === 0) return;
+    if (this.opt.http.fail === 0 && this.opt.http.delay === 0) return;
 
     this.console.info('Restoring network');
 
@@ -35,7 +35,7 @@ class Network extends Patch {
     }
 
     const original: typeof fetch = this.#originalFetch;
-    const httpChaos: Required<HttpChaosOptions> = this.opt.httpChaos;
+    const httpChaos: Required<HttpChaosOptions> = this.opt.http;
     const dispatcher: Dispatcher = this.dispatcher;
     const seed: Seed = this.seed;
 
@@ -89,7 +89,7 @@ class Network extends Patch {
 
     const RealXHR: typeof XMLHttpRequest = this.#originalXHR;
     const dispatcher: Dispatcher = this.dispatcher;
-    const httpChaos: Required<HttpChaosOptions> = this.opt.httpChaos;
+    const httpChaos: Required<HttpChaosOptions> = this.opt.http;
     const seed: Seed = this.seed;
 
     const PatchedXHR: typeof XMLHttpRequest = ((): typeof XMLHttpRequest => {
