@@ -15,6 +15,7 @@
 - 🔁 **Seeded randomness** for reproducible test runs
 - ⏯️ **Playback state hiccups** randomly seek playback and emit video element events
 - 🎥 **Media decode failures** randomly fail media decode operations
+- 🗝️ **Media decrypt failures** randomly fail media decrypt operations
 - 🧠 **Event hooks** to integrate chaos directly into your player tests
 
 ---
@@ -39,12 +40,15 @@ yarn add glitchlab
 import {GlitchLab} from 'glitchlab';
 
 const chaos: GlitchLab = new GlitchLab({
+  eme: {
+    rmksa: 0.2 // 20% chance to fail requestMediaKeySystemAccess call
+  },
   http: {
     fail: 0.3, // 30% chance to fail requests
     delay: 0.6 // 60% chance to delay requests
   },
   mse: {
-    decode: 0.05 // 5% chance to fail media decode
+    append: 0.05 // 5% chance to fail appendBuffer call
   },
   playback: {
     seek: 0.15, // 15% chance to seek playback
@@ -71,9 +75,10 @@ chaos.disable();
 
 | Option           | Type           | Default | Description                                                                         |
 | ---------------- | -------------- | ------- | ----------------------------------------------------------------------------------- |
+| `eme.mksa`       | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of failing requestMediaKeySystemAccess calls          |
 | `http.fail`      | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of Network Error                                      |
 | `http.delay`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of adding a random delay to requests                  |
-| `mse.decode`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of failing media decode operations                    |
+| `mse.append`     | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of failing appendBuffer calls                         |
 | `playback.seek`  | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of random seeks                                       |
 | `playback.stall` | `number`       | `0`     | Probability (0.0 <= p <= 1.0) of emitting `waiting` playback events                 |
 | `timer.throttle` | `number`       | `1.0`   | Speed multiplier (0 < t ≤ 1). Effective delay = delay / t (es. t=0.6 → 1s ≈ 1.67s)  |
@@ -84,11 +89,11 @@ chaos.disable();
 
 ## 🎞️ Preset chaos profiles
 
-| Level   | http.fail | http.delay | mse.decode | playback.seek | playback.stall | timer.throttle |
-| ------- | --------- | ---------- | ---------- | ------------- | -------------- | -------------- |
-| light   | 0.1       | 0.1        | 0.025      | 0.05          | 0.1            | 0.9            |
-| medium  | 0.3       | 0.3        | 0.05       | 0.15          | 0.2            | 0.6            |
-| extreme | 0.6       | 0.6        | 0.1        | 0.3           | 0.4            | 0.4            |
+| Level   | eme.mksa | http.fail | http.delay | mse.append | playback.seek | playback.stall | timer.throttle |
+| ------- | -------- | --------- | ---------- | ---------- | ------------- | -------------- | -------------- |
+| light   | 0.1      | 0.1       | 0.1        | 0.025      | 0.05          | 0.1            | 0.9            |
+| medium  | 0.2      | 0.3       | 0.3        | 0.05       | 0.15          | 0.2            | 0.6            |
+| extreme | 0.4      | 0.6       | 0.6        | 0.1        | 0.3           | 0.4            | 0.4            |
 
 ---
 
@@ -115,6 +120,7 @@ GlitchLab exposes two methods:
 
 Available events:
 
+- `'emeChaos'`
 - `'httpChaos'`
 - `'mseChaos'`
 - `'playbackChaos'`
@@ -141,12 +147,20 @@ chaos.off(ChaosEvent.httpChaos, httpChaosListener);
 ```
 
 ```typescript
+chaos.on(ChaosEvent.emeChaos, evt => {
+  // called when a media decrypt operation is failed on purpose
+  // evt.type: 'rmksa'
+  // evt.keySystem: the key system
+  // evt.supportedConfigurations: the requested configurations
+  console.log('[emeChaos]', evt.type, evt.keySystem, evt.supportedConfigurations);
+});
+
 chaos.on(ChaosEvent.mseChaos, evt => {
   // called when a media decode is failed on purpose
   // evt.kind: 'SourceBuffer'
-  // evt.type: 'decode'
+  // evt.type: 'append'
   // evt.data: the original BufferSource data
-  console.log('[mseChaos]', evt.type, evt.currentTime);
+  console.log('[mseChaos]', evt.type, evt.data);
 });
 
 chaos.on(ChaosEvent.playbackChaos, evt => {

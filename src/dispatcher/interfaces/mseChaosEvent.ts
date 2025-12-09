@@ -1,6 +1,6 @@
 type MseChaosEvent = {
   kind: 'SourceBuffer';
-  type: 'decode';
+  type: 'append';
   data: BufferSource;
 };
 

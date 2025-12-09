@@ -1,5 +1,5 @@
 interface MseChaosOptions {
-  decode?: number;
+  append?: number;
 }
 
 export default MseChaosOptions;

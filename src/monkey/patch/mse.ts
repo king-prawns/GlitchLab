@@ -9,7 +9,7 @@ class Mse extends Patch {
   #originalMediaSourceAddSourceBuffer: ((this: MediaSource, type: string) => SourceBuffer) | null = null;
 
   patch(): void {
-    if (this.opt.mse.decode === 0) return;
+    if (this.opt.mse.append === 0) return;
 
     this.console.info('Patching mse');
 
@@ -17,7 +17,7 @@ class Mse extends Patch {
   }
 
   restore(): void {
-    if (this.opt.mse.decode === 0) return;
+    if (this.opt.mse.append === 0) return;
 
     this.console.info('Restoring mse');
 
@@ -25,64 +25,64 @@ class Mse extends Patch {
   }
 
   #patchMediaSourceAddSourceBuffer(): void {
+    if (!this.#originalMediaSourceAddSourceBuffer) {
+      this.#originalMediaSourceAddSourceBuffer = window.MediaSource.prototype.addSourceBuffer;
+    }
+
+    const originalAddSourceBuffer: (this: MediaSource, type: string) => SourceBuffer =
+      this.#originalMediaSourceAddSourceBuffer;
+
     const dispatcher: Dispatcher = this.dispatcher;
     const mseChaos: Required<MseChaosOptions> = this.opt.mse;
     const seed: Seed = this.seed;
 
-    if (!this.#originalMediaSourceAddSourceBuffer) {
-      this.#originalMediaSourceAddSourceBuffer = window.MediaSource.prototype.addSourceBuffer;
+    const patched: (this: MediaSource, type: string) => SourceBuffer = function (
+      this: MediaSource,
+      type: string
+    ): SourceBuffer {
+      const sb: SourceBuffer = originalAddSourceBuffer.call(this, type);
 
-      const originalAddSourceBuffer: (this: MediaSource, type: string) => SourceBuffer =
-        this.#originalMediaSourceAddSourceBuffer;
+      const originalAppendBuffer: (data: BufferSource) => void = sb.appendBuffer;
 
-      const patchedAddSourceBuffer: (this: MediaSource, type: string) => SourceBuffer = function (
-        this: MediaSource,
-        type: string
-      ): SourceBuffer {
-        const sb: SourceBuffer = originalAddSourceBuffer.call(this, type);
+      sb.appendBuffer = function (data: BufferSource): void {
+        if (seed.random() < mseChaos.append) {
+          const corruptBytes = (buffer: ArrayBuffer, byteOffset: number = 0, byteLength?: number): void => {
+            const view: Uint8Array = new Uint8Array(
+              buffer,
+              byteOffset,
+              byteLength ?? buffer.byteLength - byteOffset
+            );
 
-        const originalAppendBuffer: (data: BufferSource) => void = sb.appendBuffer;
+            if (view.length === 0) return;
 
-        sb.appendBuffer = function (data: BufferSource): void {
-          if (seed.random() < mseChaos.decode) {
-            const corruptBytes = (buffer: ArrayBuffer, byteOffset: number = 0, byteLength?: number): void => {
-              const view: Uint8Array = new Uint8Array(
-                buffer,
-                byteOffset,
-                byteLength ?? buffer.byteLength - byteOffset
-              );
-
-              if (view.length === 0) return;
-
-              // flip a small percentage of bytes so that the segment is likely invalid
-              const corruptCount: number = Math.max(1, Math.floor(view.length * 0.01));
-              for (let i: number = 0; i < corruptCount; i += 1) {
-                const idx: number = Math.floor(seed.random() * view.length);
-                view[idx] = view[idx] ^ 0xff;
-              }
-            };
-
-            if (data instanceof ArrayBuffer) {
-              corruptBytes(data);
-            } else if (ArrayBuffer.isView(data)) {
-              corruptBytes(data.buffer, data.byteOffset, data.byteLength);
+            // flip a small percentage of bytes so that the segment is likely invalid
+            const corruptCount: number = Math.max(1, Math.floor(view.length * 0.01));
+            for (let i: number = 0; i < corruptCount; i += 1) {
+              const idx: number = Math.floor(seed.random() * view.length);
+              view[idx] = view[idx] ^ 0xff;
             }
+          };
 
-            dispatcher.emit(ChaosEvent.mseChaos, {
-              kind: 'SourceBuffer',
-              type: 'decode',
-              data
-            });
+          if (data instanceof ArrayBuffer) {
+            corruptBytes(data);
+          } else if (ArrayBuffer.isView(data)) {
+            corruptBytes(data.buffer, data.byteOffset, data.byteLength);
           }
 
-          originalAppendBuffer.call(this, data);
-        };
+          dispatcher.emit(ChaosEvent.mseChaos, {
+            kind: 'SourceBuffer',
+            type: 'append',
+            data
+          });
+        }
 
-        return sb;
+        originalAppendBuffer.call(this, data);
       };
 
-      window.MediaSource.prototype.addSourceBuffer = patchedAddSourceBuffer;
-    }
+      return sb;
+    };
+
+    window.MediaSource.prototype.addSourceBuffer = patched;
   }
 
   #restoreMediaSourceAddSourceBuffer(): void {
