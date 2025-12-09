@@ -157,6 +157,7 @@ chaos.on(ChaosEvent.emeChaos, evt => {
 
 chaos.on(ChaosEvent.mseChaos, evt => {
   // called when a media decode is failed on purpose
+  // evt.kind: 'SourceBuffer'
   // evt.type: 'append'
   // evt.data: the original BufferSource data
   console.log('[mseChaos]', evt.type, evt.data);
@@ -164,6 +165,7 @@ chaos.on(ChaosEvent.mseChaos, evt => {
 
 chaos.on(ChaosEvent.playbackChaos, evt => {
   // called when playback is perturbed
+  // evt.kind: 'HTMLVideoElement'
   // evt.type: 'seek' | 'waiting'
   // when evt.type === 'seek': evt.targetTime is the new playback position
   // when evt.type === 'waiting': evt.currentTime is the current playback position
