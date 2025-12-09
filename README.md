@@ -16,7 +16,7 @@
 - ⏯️ **Playback state hiccups** randomly seek playback and emit video element events
 - 🎥 **Media decode failures** randomly fail media decode operations
 - 🗝️ **Media decrypt failures** randomly fail media decrypt operations
-- 🧠 **Event hooks** to integrate chaos directly into your player tests
+- 🪝 **Event hooks** to integrate chaos directly into your player tests
 
 ---
 
