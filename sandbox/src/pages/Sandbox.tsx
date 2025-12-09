@@ -1,4 +1,5 @@
 import './Sandbox.css';
+import EmeChaosEvent from '@dispatcher/interfaces/emeChaosEvent';
 import React, {JSX} from 'react';
 
 import {
@@ -57,6 +58,12 @@ class Sandbox extends React.Component<IProps, IState> {
     );
   }
 
+  #onEmeChaos = (evt: EmeChaosEvent): void => {
+    const {type, keySystem, supportedConfigurations} = evt;
+    // eslint-disable-next-line no-console
+    console.log(ChaosEvent.emeChaos, {type, keySystem, supportedConfigurations});
+  };
+
   #onHttpChaos = (evt: HttpChaosEvent): void => {
     const {kind, type, url} = evt;
     if (type === 'fail') {
@@ -112,11 +119,14 @@ class Sandbox extends React.Component<IProps, IState> {
   #onStart = (): void => {
     this.#glitchLab?.enable();
 
+    this.#glitchLab?.on(ChaosEvent.emeChaos, this.#onEmeChaos);
     this.#glitchLab?.on(ChaosEvent.httpChaos, this.#onHttpChaos);
     this.#glitchLab?.on(ChaosEvent.mseChaos, this.#onMseChaos);
     this.#glitchLab?.on(ChaosEvent.playbackChaos, this.#onPlaybackChaos);
     this.#glitchLab?.on(ChaosEvent.timerChaos, this.#onTimerChaos);
 
+    // const MANIFEST_URL: string =
+    //   'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-dash-widevine.ism/.mpd';
     const MANIFEST_URL: string = 'https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd';
     this.#player?.load(MANIFEST_URL);
 
@@ -126,6 +136,7 @@ class Sandbox extends React.Component<IProps, IState> {
   #onStop = (): void => {
     this.#glitchLab?.disable();
 
+    this.#glitchLab?.off(ChaosEvent.emeChaos, this.#onEmeChaos);
     this.#glitchLab?.off(ChaosEvent.httpChaos, this.#onHttpChaos);
     this.#glitchLab?.off(ChaosEvent.mseChaos, this.#onMseChaos);
     this.#glitchLab?.off(ChaosEvent.playbackChaos, this.#onPlaybackChaos);

@@ -7,6 +7,10 @@ class TapePlayer implements Player {
 
   constructor(videoElementWrapper: HTMLDivElement) {
     this.#player = new Tape(videoElementWrapper, {
+      // eme: {
+      //   keySystem: 'com.widevine.alpha',
+      //   licenceServer: 'https://cwip-shaka-proxy.appspot.com/no_auth'
+      // },
       stream: {
         autoplay: true
       }
