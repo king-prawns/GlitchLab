@@ -152,14 +152,14 @@ chaos.on(ChaosEvent.emeChaos, evt => {
   // evt.type: 'rmksa'
   // evt.keySystem: the key system
   // evt.supportedConfigurations: the requested configurations
-  console.log('[emeChaos]', evt.type);
+  console.log('[emeChaos]', evt.type, evt.keySystem, evt.supportedConfigurations);
 });
 
 chaos.on(ChaosEvent.mseChaos, evt => {
   // called when a media decode is failed on purpose
   // evt.type: 'append'
   // evt.data: the original BufferSource data
-  console.log('[mseChaos]', evt.type, evt.currentTime);
+  console.log('[mseChaos]', evt.type, evt.data);
 });
 
 chaos.on(ChaosEvent.playbackChaos, evt => {

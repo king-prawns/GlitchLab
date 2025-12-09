@@ -1,5 +1,4 @@
 import './Sandbox.css';
-import EmeChaosEvent from '@dispatcher/interfaces/emeChaosEvent';
 import React, {JSX} from 'react';
 
 import {
@@ -7,6 +6,7 @@ import {
   ChaosLevel,
   ChaosOptions,
   GlitchLab,
+  EmeChaosEvent,
   HttpChaosEvent,
   MseChaosEvent,
   PlaybackChaosEvent,
