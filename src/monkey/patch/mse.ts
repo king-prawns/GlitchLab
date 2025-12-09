@@ -9,7 +9,7 @@ class Mse extends Patch {
   #originalMediaSourceAddSourceBuffer: ((this: MediaSource, type: string) => SourceBuffer) | null = null;
 
   patch(): void {
-    if (this.opt.mse.decode === 0) return;
+    if (this.opt.mse.append === 0) return;
 
     this.console.info('Patching mse');
 
@@ -17,7 +17,7 @@ class Mse extends Patch {
   }
 
   restore(): void {
-    if (this.opt.mse.decode === 0) return;
+    if (this.opt.mse.append === 0) return;
 
     this.console.info('Restoring mse');
 
@@ -44,7 +44,7 @@ class Mse extends Patch {
         const originalAppendBuffer: (data: BufferSource) => void = sb.appendBuffer;
 
         sb.appendBuffer = function (data: BufferSource): void {
-          if (seed.random() < mseChaos.decode) {
+          if (seed.random() < mseChaos.append) {
             const corruptBytes = (buffer: ArrayBuffer, byteOffset: number = 0, byteLength?: number): void => {
               const view: Uint8Array = new Uint8Array(
                 buffer,
@@ -70,7 +70,7 @@ class Mse extends Patch {
 
             dispatcher.emit(ChaosEvent.mseChaos, {
               kind: 'SourceBuffer',
-              type: 'decode',
+              type: 'append',
               data
             });
           }

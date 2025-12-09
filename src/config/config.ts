@@ -1,5 +1,6 @@
 import ChaosLevel from './enum/chaosLevel';
 import ChaosOptions from './interfaces/chaosOptions';
+import EmeChaosOptions from './interfaces/emeChaosOptions';
 import HttpChaosOptions from './interfaces/httpChaosOptions';
 import MseChaosOptions from './interfaces/mseChaosOptions';
 import PlaybackChaosOptions from './interfaces/playbackChaosOptions';
@@ -8,30 +9,34 @@ import TimerChaosOptions from './interfaces/timerChaosOptions';
 class Config {
   #chaosPresets: Record<ChaosLevel, ChaosOptions> = {
     [ChaosLevel.light]: {
+      eme: {rmksa: 0.1},
       http: {fail: 0.1, delay: 0.1},
-      mse: {decode: 0.025},
+      mse: {append: 0.025},
       playback: {seek: 0.05, stall: 0.1},
       timer: {throttle: 0.9}
     },
     [ChaosLevel.medium]: {
+      eme: {rmksa: 0.2},
       http: {fail: 0.3, delay: 0.3},
-      mse: {decode: 0.05},
+      mse: {append: 0.05},
       playback: {seek: 0.15, stall: 0.2},
       timer: {throttle: 0.6}
     },
     [ChaosLevel.extreme]: {
+      eme: {rmksa: 0.4},
       http: {fail: 0.6, delay: 0.6},
-      mse: {decode: 0.1},
+      mse: {append: 0.1},
       playback: {seek: 0.3, stall: 0.4},
       timer: {throttle: 0.4}
     }
   };
 
   #options: DeepRequired<ChaosOptions> = {
-    timer: {throttle: 1.0},
+    eme: {rmksa: 0},
     http: {fail: 0, delay: 0},
+    mse: {append: 0},
     playback: {seek: 0, stall: 0},
-    mse: {decode: 0},
+    timer: {throttle: 1.0},
     seed: null,
     quiet: false
   };
@@ -67,6 +72,21 @@ class Config {
   #sanitizeOpt(opt: Partial<ChaosOptions>): Partial<ChaosOptions> {
     const sanitizedOpt: Partial<ChaosOptions> = {};
 
+    if (opt.eme !== undefined) {
+      const sanitizedEmeChaos: Partial<EmeChaosOptions> = {};
+      if (opt.eme.rmksa !== undefined) {
+        if (opt.eme.rmksa < 0 || opt.eme.rmksa > 1) {
+          throw new Error('"emeChaos.rmksa" must be between 0 and 1');
+        }
+
+        sanitizedEmeChaos.rmksa = opt.eme.rmksa;
+      }
+
+      if (Object.keys(sanitizedEmeChaos).length > 0) {
+        sanitizedOpt.eme = sanitizedEmeChaos;
+      }
+    }
+
     if (opt.http !== undefined) {
       const sanitizedHttpChaos: Partial<HttpChaosOptions> = {};
 
@@ -94,12 +114,12 @@ class Config {
     if (opt.mse !== undefined) {
       const sanitizedMseChaos: Partial<MseChaosOptions> = {};
 
-      if (opt.mse.decode !== undefined) {
-        if (opt.mse.decode < 0 || opt.mse.decode > 1) {
-          throw new Error('"mseChaos.decode" must be between 0 and 1');
+      if (opt.mse.append !== undefined) {
+        if (opt.mse.append < 0 || opt.mse.append > 1) {
+          throw new Error('"mseChaos.append" must be between 0 and 1');
         }
 
-        sanitizedMseChaos.decode = opt.mse.decode;
+        sanitizedMseChaos.append = opt.mse.append;
       }
 
       if (Object.keys(sanitizedMseChaos).length > 0) {

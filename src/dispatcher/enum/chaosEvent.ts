@@ -1,8 +1,9 @@
 enum ChaosEvent {
-  timerChaos = 'timerChaos',
+  emeChaos = 'emeChaos',
   httpChaos = 'httpChaos',
+  mseChaos = 'mseChaos',
   playbackChaos = 'playbackChaos',
-  mseChaos = 'mseChaos'
+  timerChaos = 'timerChaos'
 }
 
 export default ChaosEvent;
