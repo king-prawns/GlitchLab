@@ -1,6 +1,6 @@
 {
   "name": "glitchlab",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Where your video player learns to survive chaos",
   "main": "dist/glitchlab.js",
   "types": "dist/index.d.ts",
