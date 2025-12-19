@@ -1,5 +1,7 @@
 # 🎬 GlitchLab
 
+[![npm version](https://badge.fury.io/js/glitchlab.svg)](https://badge.fury.io/js/glitchlab)
+
 **Where your video player learns to survive chaos.**
 
 **GlitchLab** is a chaos engineering toolkit for video players.
