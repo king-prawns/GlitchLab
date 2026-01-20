@@ -13,9 +13,8 @@ import {
   TimerChaosEvent
 } from '../../../src';
 import type IPlayer from '../interfaces/Player';
-import Player from '../players/Tape';
+import Player from '../players/Dashjs';
 // import Player from '../players/Shaka';
-// import Player from '../players/Dashjs';
 // import Player from '../players/RxPlayer';
 // import Player from '../players/Videojs';
 
